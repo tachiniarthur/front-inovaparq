@@ -14,7 +14,7 @@
           <form
             v-show="isRegisterMode"
             class="flex flex-col w-full gap-4 p-4 overflow-y-auto custom-scroll"
-            @submit.prevent="register"
+            @submit.prevent="handleRegister"
           >
             <div class="w-full flex items-center justify-center py-2 rounded-t-lg">
               <img :src="'./logo-inovaparq.png'" alt="Logo Inovaparq" class="h-auto w-30" />
@@ -22,15 +22,15 @@
             <div class="flex flex-col w-full gap-4 p-4 overflow-y-auto custom-scroll">
               <div class="flex flex-col w-full">
                 <label for="name">Nome</label>
-                <input type="text" id="name" class="border-2 rounded-lg" v-model="nameRegister" />
+                <input type="text" id="name" class="border-2 rounded-lg" v-model="registerForm.name" />
               </div>
               <div class="flex flex-col w-full">
                 <label for="email">E-mail</label>
-                <input type="email" id="email" class="border-2 rounded-lg" v-model="emailRegister" />
+                <input type="email" id="email" class="border-2 rounded-lg" v-model="registerForm.email" />
               </div>
               <div class="flex flex-col w-full">
                 <label for="password">Senha</label>
-                <input type="password" id="passwordRegister" class="border-2 rounded-lg" v-model="passwordRegister" />
+                <input type="password" id="passwordRegister" class="border-2 rounded-lg" v-model="registerForm.password" />
               </div>
               <div class="flex flex-col w-full">
                 <label for="confirmPassword">Confirmar Senha</label>
@@ -38,7 +38,7 @@
                   type="password"
                   id="confirmPassword"
                   class="border-2 rounded-lg"
-                  v-model="confirmPasswordRegister"
+                  v-model="registerForm.confirmPassword"
                 />
               </div>
               <button type="submit" class="w-full border bg-primary-500 text-lg text-white rounded-md px-12">
@@ -49,7 +49,7 @@
           <form
             v-show="!isRegisterMode"
             class="flex flex-col w-full gap-4 p-4 items-center justify-center"
-            @submit.prevent="login"
+            @submit.prevent="handleLogin"
           >
             <div class="w-full flex items-center justify-center py-2 rounded-t-lg">
               <img :src="'./logo-inovaparq.png'" alt="Logo Inovaparq" class="h-auto w-30" />
@@ -57,7 +57,7 @@
             <div class="flex flex-col w-full gap-4 p-4 items-center justify-center">
               <div class="flex flex-col w-full">
                 <label for="user">Usuário</label>
-                <input type="text" name="user" id="user" class="border-2 rounded-lg" v-model="userNameLogin" />
+                <input type="text" name="user" id="user" class="border-2 rounded-lg" v-model="loginForm.username" />
               </div>
               <div class="flex flex-col w-full">
                 <label for="password">Senha</label>
@@ -66,7 +66,7 @@
                   name="password"
                   id="password"
                   class="border-2 rounded-lg"
-                  v-model="passwordLogin"
+                  v-model="loginForm.password"
                 />
                 <span class="text-md flex justify-start items-start text-blue-600">Esqueceu sua senha?</span>
               </div>
@@ -104,76 +104,36 @@
 
 <script setup>
 import { ref } from 'vue';
+import AuthService from '@/services/Auth/AuthService.js';
+
+const auth = new AuthService();
 
 const isRegisterMode = ref(false);
 
+const loginForm = ref({
+  username: '',
+  password: '',
+})
+
+const registerForm = ref({
+  name: '',
+  email: '',
+  password: '',
+  confirmPassword: '',
+})
+
+function handleLogin(){
+  console.log('Login:', loginForm.value);
+}
+
+function handleRegister() {
+  if (registerForm.value.password !== registerForm.value.passwordConfirm) {
+      alert('As senhas não coincidem!');
+      return;
+    }
+}
+
 function toggleMode() {
   isRegisterMode.value = !isRegisterMode.value;
-}
-
-const userNameLogin = ref('');
-const passwordLogin = ref('');
-
-const nameRegister = ref('');
-const emailRegister = ref('');
-const passwordRegister = ref('');
-const confirmPasswordRegister = ref('');
-
-async function login() {
-  try {
-    const response = await fetch('http://localhost:8080/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        username: userNameLogin.value,
-        password: passwordLogin.value,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('Erro no login:', data.message);
-      return;
-    }
-
-    console.log('Login bem-sucedido:', data);
-  } catch (error) {
-    console.error('Erro na requisição:', error);
-  }
-}
-
-async function register() {
-  if (passwordRegister.value !== confirmPasswordRegister.value) {
-    alert('As senhas não coincidem!');
-    return;
-  }
-
-  try {
-    const response = await fetch('http://localhost:8080/register', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        name: nameRegister.value,
-        email: emailRegister.value,
-        password: passwordRegister.value,
-      }),
-    });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      console.error('Erro no cadastro:', data.message);
-      return;
-    }
-
-    console.log('Cadastro bem-sucedido:', data);
-  } catch (error) {
-    console.error('Erro na requisição de cadastro:', error);
-  }
 }
 </script>
