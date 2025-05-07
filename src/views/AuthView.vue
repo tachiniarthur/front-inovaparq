@@ -73,6 +73,10 @@
                 <!-- <button type="submit" class="w-full border bg-primary-500 text-lg text-white rounded-md px-12">
                   Criar
                 </button> -->
+                <PasswordValidation
+                  :password="registerForm.password"
+                  :confirmPassword="registerForm.confirmPassword"
+                />
                 <BaseButton
                 :buttonText="'Criar'"
                 :size="'lg'"
@@ -165,6 +169,7 @@ import { ref } from 'vue';
 // import AuthService from '@/services/Auth/AuthService.js';
 import BaseButton from '@/assets/components/BaseButton.vue';
 import BaseInput from '@/assets/components/BaseInput.vue';
+import PasswordValidation from '@/assets/components/PasswordValidation.vue';
 
 // const auth = new AuthService();
 
