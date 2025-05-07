@@ -45,3 +45,12 @@
   --color-quaternary-800: #472f08;
   --color-quaternary-900: #241804;
 }
+
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
