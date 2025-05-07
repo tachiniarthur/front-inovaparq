@@ -3,15 +3,16 @@
     <button
       :class="[
         sizeClasses[size],
-        `bg-${color}`,
-        'cursor-pointer text-white font-bold py-2 px-4 rounded transition-all active:scale-90 hover:opacity-90',
-        { 'opacity-50 cursor-not-allowed pointer-events-none': loading },
+        color,
+        'text-white cursor-pointer font-bold rounded transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center',
+        loading ? 'cursor-not-allowed pointer-events-none' : '',
+        'min-w-[150px] h-[48px]',
       ]"
       :disabled="loading"
     >
-      <div class="flex justify-center items-center">
+      <div class="flex items-center justify-center">
         <template v-if="loading">
-          <Spinner :color="'primary'" />
+          <Spinner />
         </template>
         <template v-else>
           {{ buttonText }}
@@ -35,7 +36,7 @@ defineProps({
   },
   color: {
     type: String,
-    default: 'primary',
+    default: 'bg-primary-500',
   },
   loading: {
     type: Boolean,
@@ -44,8 +45,8 @@ defineProps({
 });
 
 const sizeClasses = {
-  sm: 'text-sm py-1 px-2',
-  md: 'text-md py-2 px-4',
-  lg: 'text-lg py-3 px-6',
+  sm: 'text-sm py-2 px-4',
+  md: 'text-md py-3 px-6',
+  lg: 'text-lg py-4 px-8',
 };
 </script>

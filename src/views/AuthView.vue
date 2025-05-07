@@ -70,14 +70,10 @@
                 />
                 <span class="text-md flex justify-start items-start text-blue-600">Esqueceu sua senha?</span>
               </div>
-              <!-- <button type="submit" class="w-full border bg-primary-500 text-lg text-white rounded-md px-12">
-                Entrar
-              </button> -->
               <BaseButton
               :buttonText="'Entrar'"
               :size="'lg'"
-              :color="'bg-primary-500'"
-              :loading="true"
+              :loading="isLoading"
               @click="handleLogin"
               />
             </div>
@@ -130,8 +126,16 @@ const registerForm = ref({
   confirmPassword: '',
 })
 
-function handleLogin(){
+const isLoading = ref(false);
+
+function handleLogin() {
+  isLoading.value = true; // Ativa o estado de carregamento
   console.log('Login:', loginForm.value);
+
+  // Simulação de requisição assíncrona
+  setTimeout(() => {
+    isLoading.value = false; // Desativa o estado de carregamento
+  }, 2000);
 }
 
 function handleRegister() {
