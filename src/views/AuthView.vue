@@ -70,9 +70,16 @@
                 />
                 <span class="text-md flex justify-start items-start text-blue-600">Esqueceu sua senha?</span>
               </div>
-              <button type="submit" class="w-full border bg-primary-500 text-lg text-white rounded-md px-12">
+              <!-- <button type="submit" class="w-full border bg-primary-500 text-lg text-white rounded-md px-12">
                 Entrar
-              </button>
+              </button> -->
+              <BaseButton
+              :buttonText="'Entrar'"
+              :size="'lg'"
+              :color="'bg-primary-500'"
+              :loading="true"
+              @click="handleLogin"
+              />
             </div>
           </form>
         </div>
@@ -105,6 +112,7 @@
 <script setup>
 import { ref } from 'vue';
 import AuthService from '@/services/Auth/AuthService.js';
+import BaseButton from '@/assets/components/BaseButton.vue';
 
 const auth = new AuthService();
 
