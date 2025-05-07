@@ -1,7 +1,7 @@
 <template>
   <div class="relative mb-5">
     <label
-      class="mb-2.5 block text-white"
+      class="mb-2.5 block text-black"
       :class="{ 'flex items-center gap-2': type === 'checkbox' }"
     >
       <template v-if="type === 'checkbox'">

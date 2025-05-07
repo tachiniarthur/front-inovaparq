@@ -3,7 +3,7 @@
     class="bg-[url('./imagem-inovaparq.png')] bg-cover bg-center h-screen w-full flex items-center justify-center"
   >
     <div class="bg-white relative rounded-2xl overflow-hidden w-auto">
-      <div class="flex relative transition-all duration-500 ease-in-out w-[60rem] h-[26rem]">
+      <div class="flex relative transition-all duration-500 ease-in-out w-[65rem] h-[30rem]">
         <div
           class="w-1/2 bg-white flex flex-col transition-all duration-500 ease-in-out px-10"
           :class="{
@@ -21,29 +21,66 @@
             </div>
             <div class="flex flex-col w-full gap-4 p-4 overflow-y-auto custom-scroll">
               <div class="flex flex-col w-full">
-                <label for="name">Nome</label>
-                <input type="text" id="name" class="border-2 rounded-lg" v-model="registerForm.name" />
-              </div>
-              <div class="flex flex-col w-full">
-                <label for="email">E-mail</label>
-                <input type="email" id="email" class="border-2 rounded-lg" v-model="registerForm.email" />
-              </div>
-              <div class="flex flex-col w-full">
-                <label for="password">Senha</label>
-                <input type="password" id="passwordRegister" class="border-2 rounded-lg" v-model="registerForm.password" />
-              </div>
-              <div class="flex flex-col w-full">
-                <label for="confirmPassword">Confirmar Senha</label>
+                <!-- <label for="name">Nome</label>
+                <input type="text" id="name" class="border-2 rounded-lg" v-model="registerForm.name" /> -->
+                <BaseInput
+                  label="Nome"
+                  placeholder="Digite seu nome"
+                  icon="user"
+                  type="text"
+                  name="name"
+                  id="name"
+                  v-model="registerForm.name"
+                />
+                <BaseInput
+                  label="Usuário"
+                  placeholder="Digite seu usuário"
+                  icon="id-card"
+                  type="text"
+                  name="user"
+                  id="user"
+                  v-model="registerForm.username"
+                />
+                <!-- <label for="email">E-mail</label>
+                <input type="email" id="email" class="border-2 rounded-lg" v-model="registerForm.email" /> -->
+                <!-- <label for="password">Senha</label>
+                <input type="password" id="passwordRegister" class="border-2 rounded-lg" v-model="registerForm.password" /> -->
+                <BaseInput
+                  label="Senha"
+                  placeholder="••••••••••"
+                  icon="lock"
+                  type="password"
+                  name="passwordRegister"
+                  id="passwordRegister"
+                  v-model="registerForm.password"
+                />
+                <!-- <label for="confirmPassword">Confirmar Senha</label>
                 <input
                   type="password"
                   id="confirmPassword"
                   class="border-2 rounded-lg"
                   v-model="registerForm.confirmPassword"
+                /> -->
+                <BaseInput
+                  label="Confirmar Senha"
+                  placeholder="••••••••••"
+                  icon="lock"
+                  type="password"
+                  name="confirmPassword"
+                  id="confirmPassword"
+                  v-model="registerForm.confirmPassword"
+                />
+                <!-- <button type="submit" class="w-full border bg-primary-500 text-lg text-white rounded-md px-12">
+                  Criar
+                </button> -->
+                <BaseButton
+                :buttonText="'Criar'"
+                :size="'lg'"
+                :loading="isLoading"
+                @click="handleRegister"
+                class="self-center"
                 />
               </div>
-              <button type="submit" class="w-full border bg-primary-500 text-lg text-white rounded-md px-12">
-                Criar
-              </button>
             </div>
           </form>
           <form
@@ -56,11 +93,29 @@
             </div>
             <div class="flex flex-col w-full gap-4 p-4 items-center justify-center">
               <div class="flex flex-col w-full">
-                <label for="user">Usuário</label>
-                <input type="text" name="user" id="user" class="border-2 rounded-lg" v-model="loginForm.username" />
+                <!-- <label for="user">Usuário</label> -->
+                <!-- <input type="text" name="user" id="user" class="border-2 rounded-lg" v-model="loginForm.username" /> -->
+                <BaseInput
+                  label="Usuário"
+                  placeholder="Digite seu usuário"
+                  icon="id-card"
+                  type="text"
+                  name="user"
+                  id="user"
+                  v-model="loginForm.username"
+                  />
               </div>
               <div class="flex flex-col w-full">
-                <label for="password">Senha</label>
+                <BaseInput
+                label="Senha"
+                placeholder="••••••••••"
+                icon="lock"
+                type="password"
+                name="password"
+                id="password"
+                v-model="loginForm.password"
+                />
+                <!-- <label for="password">Senha</label>
                 <input
                   type="password"
                   name="password"
@@ -68,7 +123,7 @@
                   class="border-2 rounded-lg"
                   v-model="loginForm.password"
                 />
-                <span class="text-md flex justify-start items-start text-blue-600">Esqueceu sua senha?</span>
+                <span class="text-md flex justify-start items-start text-blue-600">Esqueceu sua senha?</span> -->
               </div>
               <BaseButton
               :buttonText="'Entrar'"
@@ -109,6 +164,7 @@
 import { ref } from 'vue';
 // import AuthService from '@/services/Auth/AuthService.js';
 import BaseButton from '@/assets/components/BaseButton.vue';
+import BaseInput from '@/assets/components/BaseInput.vue';
 
 // const auth = new AuthService();
 
@@ -129,12 +185,11 @@ const registerForm = ref({
 const isLoading = ref(false);
 
 function handleLogin() {
-  isLoading.value = true; // Ativa o estado de carregamento
+  isLoading.value = true;
   console.log('Login:', loginForm.value);
 
-  // Simulação de requisição assíncrona
   setTimeout(() => {
-    isLoading.value = false; // Desativa o estado de carregamento
+    isLoading.value = false;
   }, 2000);
 }
 
