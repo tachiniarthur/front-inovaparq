@@ -23,7 +23,7 @@
 </template>
 
 <script setup>
-import Spinner from './Spinner.vue';
+import Spinner from './BaseSpinner.vue';
 
 defineProps({
   buttonText: {

@@ -107,10 +107,10 @@
 
 <script setup>
 import { ref } from 'vue';
-import AuthService from '@/services/Auth/AuthService.js';
+// import AuthService from '@/services/Auth/AuthService.js';
 import BaseButton from '@/assets/components/BaseButton.vue';
 
-const auth = new AuthService();
+// const auth = new AuthService();
 
 const isRegisterMode = ref(false);
 
