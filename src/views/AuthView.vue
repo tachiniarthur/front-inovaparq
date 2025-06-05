@@ -21,8 +21,6 @@
             </div>
             <div class="flex flex-col w-full gap-4 p-4 overflow-y-auto custom-scroll">
               <div class="flex flex-col w-full">
-                <!-- <label for="name">Nome</label>
-                <input type="text" id="name" class="border-2 rounded-lg" v-model="registerForm.name" /> -->
                 <BaseInput
                   label="Nome"
                   placeholder="Digite seu nome"
@@ -41,10 +39,6 @@
                   id="user"
                   v-model="registerForm.username"
                 />
-                <!-- <label for="email">E-mail</label>
-                <input type="email" id="email" class="border-2 rounded-lg" v-model="registerForm.email" /> -->
-                <!-- <label for="password">Senha</label>
-                <input type="password" id="passwordRegister" class="border-2 rounded-lg" v-model="registerForm.password" /> -->
                 <BaseInput
                   label="Senha"
                   placeholder="••••••••••"
@@ -54,13 +48,6 @@
                   id="passwordRegister"
                   v-model="registerForm.password"
                 />
-                <!-- <label for="confirmPassword">Confirmar Senha</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  class="border-2 rounded-lg"
-                  v-model="registerForm.confirmPassword"
-                /> -->
                 <BaseInput
                   label="Confirmar Senha"
                   placeholder="••••••••••"
@@ -70,9 +57,6 @@
                   id="confirmPassword"
                   v-model="registerForm.confirmPassword"
                 />
-                <!-- <button type="submit" class="w-full border bg-primary-500 text-lg text-white rounded-md px-12">
-                  Criar
-                </button> -->
                 <PasswordValidation
                   :password="registerForm.password"
                   :confirmPassword="registerForm.confirmPassword"
@@ -97,8 +81,6 @@
             </div>
             <div class="flex flex-col w-full gap-4 p-4 items-center justify-center">
               <div class="flex flex-col w-full">
-                <!-- <label for="user">Usuário</label> -->
-                <!-- <input type="text" name="user" id="user" class="border-2 rounded-lg" v-model="loginForm.username" /> -->
                 <BaseInput
                   label="Usuário"
                   placeholder="Digite seu usuário"
@@ -119,15 +101,6 @@
                 id="password"
                 v-model="loginForm.password"
                 />
-                <!-- <label for="password">Senha</label>
-                <input
-                  type="password"
-                  name="password"
-                  id="password"
-                  class="border-2 rounded-lg"
-                  v-model="loginForm.password"
-                />
-                <span class="text-md flex justify-start items-start text-blue-600">Esqueceu sua senha?</span> -->
               </div>
               <BaseButton
               :buttonText="'Entrar'"
@@ -166,12 +139,14 @@
 
 <script setup>
 import { ref } from 'vue';
-// import AuthService from '@/services/Auth/AuthService.js';
+import AuthService from '@/services/Auth/AuthService.js';
 import BaseButton from '@/assets/components/BaseButton.vue';
 import BaseInput from '@/assets/components/BaseInput.vue';
 import PasswordValidation from '@/assets/components/PasswordValidation.vue';
+import { isLoggedIn } from '@/store/authStore.js';
+import router from '@/router';
 
-// const auth = new AuthService();
+const auth = new AuthService();
 
 const isRegisterMode = ref(false);
 
@@ -189,13 +164,19 @@ const registerForm = ref({
 
 const isLoading = ref(false);
 
+
 function handleLogin() {
   isLoading.value = true;
-  console.log('Login:', loginForm.value);
 
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 2000);
+  auth.login(loginForm.value)
+    .then(response => {
+      localStorage.setItem('token', response.data);
+      isLoggedIn.value = true;
+      router.push({ path: '/home' });
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 }
 
 function handleRegister() {
