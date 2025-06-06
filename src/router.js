@@ -1,14 +1,30 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import AuthView from '@/views/AuthView.vue';
-import HomeView from './views/HomeView.vue';
-import ProfileView from './views/ProfileView.vue';
 
 const routes = [
-  { path: '/', redirect: '/auth' },
-  { path: '/auth', component: AuthView },
-  { path: '/login', redirect: '/auth' },
-  { path: '/home', component: HomeView },
-  { path: '/profile', component: ProfileView },
+  {
+    path: '/',
+    redirect: '/auth'
+  },
+  {
+    path: '/auth',
+    component: () => import('./views/Auth.vue'),
+  },
+  {
+    path: '/login',
+    redirect: '/auth'
+  },
+  {
+    path: '/home',
+    component: () => import('./views/Home.vue'),
+  },
+  {
+    path: '/create-company',
+    component: () => import('./views/Company/CreateCompany.vue'),
+  },
+  {
+    path: '/profile',
+    component: () => import('./views/Profile.vue'),
+  },
 ];
 
 const router = createRouter({

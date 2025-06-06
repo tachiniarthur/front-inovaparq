@@ -1,5 +1,8 @@
 <template>
   <div class="relative mb-5">
+    <label v-if="label" class="block mb-1 text-sm font-medium text-gray-700">
+      {{ label }}
+    </label>
     <div v-if="type === 'password'" class="relative">
       <font-awesome-icon
         v-if="icon"
@@ -21,7 +24,19 @@
         <font-awesome-icon :icon="['fas', showPassword ? 'eye-slash' : 'eye']" />
       </button>
     </div>
-
+    <div v-else-if="type === 'file'" class="relative flex flex-col gap-2">
+      <div class="flex items-center gap-2">
+        <label
+          class="cursor-pointer bg-primary-600 text-white px-4 py-2 rounded hover:bg-primary-700 transition flex items-center gap-2"
+          tabindex="0"
+        >
+          <font-awesome-icon v-if="icon" :icon="icon" class="text-white" />
+          <span>Escolher arquivo</span>
+          <input type="file" class="hidden" @change="onFileChange" />
+        </label>
+      </div>
+      <span class="text-sm text-gray-600 truncate" v-if="fileName">{{ fileName }}</span>
+    </div>
     <div v-else class="relative">
       <font-awesome-icon
         v-if="icon"
@@ -43,9 +58,9 @@
 </template>
 
 <script setup>
-import { ref, defineProps } from "vue";
+import { ref, defineProps, defineEmits, watch } from 'vue';
 
-defineProps({
+const props = defineProps({
   label: String,
   type: String,
   placeholder: String,
@@ -55,16 +70,44 @@ defineProps({
     default: false,
   },
   icon: String,
-  modelValue: [String, Boolean],
+  modelValue: [String, Boolean, File],
   error: {
     type: String,
-    default: "",
+    default: '',
   },
 });
+
+const emit = defineEmits(['update:modelValue']);
 
 const showPassword = ref(false);
 
 const togglePasswordVisibility = () => {
   showPassword.value = !showPassword.value;
 };
+
+const fileName = ref('');
+const onFileChange = (e) => {
+  const file = e.target.files[0];
+  if (file) {
+    const ext = file.name.split('.').pop().toLowerCase();
+    if (!['pdf', 'jpg', 'jpeg', 'png'].includes(ext)) {
+      emit('update:modelValue', null);
+      fileName.value = '';
+      e.target.value = '';
+
+      return;
+    } else {
+      fileName.value = file.name;
+      emit('update:modelValue', file);
+    }
+  }
+};
+
+watch(
+  () => props.modelValue,
+  (val) => {
+    if (val && val.name) fileName.value = val.name;
+    else fileName.value = '';
+  }
+);
 </script>

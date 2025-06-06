@@ -2,7 +2,7 @@
 import { ref, onMounted } from 'vue';
 import HeaderComponent from '@/assets/components/HeaderComponent.vue';
 
-const isLoggedIn = ref(false);
+const isLoggedIn = ref(true);
 
 // onMounted(() => {
 //   const token = localStorage.getItem('token');
