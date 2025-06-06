@@ -57,16 +57,13 @@
                   id="confirmPassword"
                   v-model="registerForm.confirmPassword"
                 />
-                <PasswordValidation
-                  :password="registerForm.password"
-                  :confirmPassword="registerForm.confirmPassword"
-                />
+                <PasswordValidation :password="registerForm.password" :confirmPassword="registerForm.confirmPassword" />
                 <BaseButton
-                :buttonText="'Criar'"
-                :size="'lg'"
-                :loading="isLoading"
-                @click="handleRegister"
-                class="self-center"
+                  :buttonText="'Criar'"
+                  :size="'lg'"
+                  :loading="isLoading"
+                  @click="handleRegister"
+                  class="self-center"
                 />
               </div>
             </div>
@@ -82,32 +79,25 @@
             <div class="flex flex-col w-full gap-4 p-4 items-center justify-center">
               <div class="flex flex-col w-full">
                 <BaseInput
-                  label="Usuário"
                   placeholder="Digite seu usuário"
                   icon="id-card"
                   type="text"
-                  name="user"
-                  id="user"
+                  name="username"
+                  id="username"
                   v-model="loginForm.username"
-                  />
+                />
               </div>
               <div class="flex flex-col w-full">
                 <BaseInput
-                label="Senha"
-                placeholder="••••••••••"
-                icon="lock"
-                type="password"
-                name="password"
-                id="password"
-                v-model="loginForm.password"
+                  placeholder="••••••••••"
+                  icon="lock"
+                  type="password"
+                  name="password"
+                  id="password"
+                  v-model="loginForm.password"
                 />
               </div>
-              <BaseButton
-              :buttonText="'Entrar'"
-              :size="'lg'"
-              :loading="isLoading"
-              @click="handleLogin"
-              />
+              <BaseButton :buttonText="'Entrar'" :size="'lg'" :loading="isLoading" @click="handleLogin" />
             </div>
           </form>
         </div>
@@ -153,24 +143,25 @@ const isRegisterMode = ref(false);
 const loginForm = ref({
   username: '',
   password: '',
-})
+});
 
 const registerForm = ref({
   name: '',
   email: '',
   password: '',
   confirmPassword: '',
-})
+});
 
 const isLoading = ref(false);
-
 
 function handleLogin() {
   isLoading.value = true;
 
-  auth.login(loginForm.value)
-    .then(response => {
-      localStorage.setItem('token', response.data);
+  auth
+    .login(loginForm.value)
+    .then((response) => {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
       isLoggedIn.value = true;
       router.push({ path: '/home' });
     })
@@ -181,9 +172,9 @@ function handleLogin() {
 
 function handleRegister() {
   if (registerForm.value.password !== registerForm.value.passwordConfirm) {
-      alert('As senhas não coincidem!');
-      return;
-    }
+    alert('As senhas não coincidem!');
+    return;
+  }
 }
 
 function toggleMode() {

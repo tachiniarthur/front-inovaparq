@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import AuthView from '@/views/AuthView.vue';
-import HomeView from './views/HomeView.vue';
-import ProfileView from './views/ProfileView.vue';
+import HomeView from '@/views/HomeView.vue';
+import ProfileView from '@/views/Profile/ProfileView.vue';
+import ProfileEdit from '@/views/Profile/ProfileEdit.vue';
 
 // Company routes
 import CompanyView from '@/views/Company/CompanyView.vue';
@@ -13,7 +14,9 @@ const routes = [
   { path: '/auth', component: AuthView },
   { path: '/login', redirect: '/auth' },
   { path: '/home', component: HomeView, meta: { requiresAuth: true } },
+
   { path: '/profile', component: ProfileView, meta: { requiresAuth: true } },
+  { path: '/profile/edit', component: ProfileEdit, meta: { requiresAuth: true } },
 
   // company routes
   { path: '/company-view/info/:id', component: CompanyView, meta: { requiresAuth: true }, props: true },

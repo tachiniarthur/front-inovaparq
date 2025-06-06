@@ -80,7 +80,6 @@ function toggleNotifications() {
 }
 
 function handleOption(option) {
-  console.log(`Opção selecionada: ${option}`);
   if (option === 'Sair') {
     localStorage.removeItem('token');
     localStorage.clear();
