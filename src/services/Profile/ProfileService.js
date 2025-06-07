@@ -3,7 +3,7 @@ import api from '@/services/api';
 export default class ProfileService {
   async update(id, req) {
     try {
-      const response = await api.post('/login/', req);
+      const response = await api.put(`/users/${id}`, req);
       return response;
     } catch (error) {
       console.error('Erro ao fazer login:', error);
@@ -11,9 +11,9 @@ export default class ProfileService {
     }
   }
 
-  async register(id, req) {
+  async delete(id, req) {
     try {
-      const response = await api.delete('/users/', req);
+      const response = await api.delete(`/users/${id}`, req);
       return response;
     } catch (error) {
       console.error('Erro ao fazer registro:', error);

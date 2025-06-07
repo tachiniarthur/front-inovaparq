@@ -35,7 +35,7 @@
       </router-link>
       <div class="flex space-x-4">
         <BaseButton :buttonText="'Excluir Conta'" :loading="isLoading" @click="handleAccount(1)" />
-        <BaseButton :buttonText="'Salvar'" :loading="isLoading" @click="handleAccount(2)" />
+        <BaseButton :buttonText="'Salvar'" :color="'bg-tertiary-500'" :loading="isLoading" @click="handleAccount(2)" />
       </div>
     </div>
   </div>
@@ -46,6 +46,7 @@ import { ref, watch } from 'vue';
 import BaseInput from '@/assets/components/BaseInput.vue';
 import BaseButton from '@/assets/components/BaseButton.vue';
 import ProfileService from '@/services/Profile/ProfileService.js';
+import router from '@/router';
 
 const profileService = new ProfileService();
 
@@ -97,20 +98,24 @@ watch(
 function handleAccount(action) {
   if (action === 1) {
     profileService
-      .login(loginForm.value)
+      .delete(userParsed.id, loginForm.value)
       .then((response) => {
-        localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data));
+        localStorage.removeItem('token', response.data.token);
+        localStorage.removeItem('user', JSON.stringify(loginForm.value));
+        alert('Conta removida com sucesso!');
+        router.push({ path: '/auth' });
       })
       .finally(() => {
         isLoading.value = false;
       });
   } else if (action === 2) {
     profileService
-      .login(loginForm.value)
+      .update(userParsed.id, loginForm.value)
       .then((response) => {
         localStorage.setItem('token', response.data.token);
-        localStorage.setItem('user', JSON.stringify(loginForm.value));
+        localStorage.setItem('user', JSON.stringify(response.data));
+        alert('Perfil atualizado com sucesso!');
+        router.push({ path: '/profile' });
       })
       .finally(() => {
         isLoading.value = false;
