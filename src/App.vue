@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue';
-import HeaderComponent from '@/assets/components/HeaderComponent.vue';
+import HeaderComponent from '@/components/HeaderComponent.vue';
 
 const isLoggedIn = ref(true);
 

@@ -184,10 +184,10 @@
 <script setup>
 import { ref } from 'vue';
 // import AuthService from '@/services/Auth/AuthService.js';
-import BaseButton from '@/assets/components/BaseButton.vue';
-import BaseInput from '@/assets/components/BaseInput.vue';
-import PasswordValidation from '@/assets/components/PasswordValidation.vue';
-import BaseModal from '@/assets/components/BaseModal.vue';
+import BaseButton from '@/components/BaseButton.vue';
+import BaseInput from '@/components/BaseInput.vue';
+import PasswordValidation from '@/components/PasswordValidation.vue';
+import BaseModal from '@/components/BaseModal.vue';
 
 // const auth = new AuthService();
 
