@@ -3,11 +3,15 @@ import AuthView from '@/views/AuthView.vue';
 import HomeView from '@/views/HomeView.vue';
 import ProfileView from '@/views/Profile/ProfileView.vue';
 import ProfileEdit from '@/views/Profile/ProfileEdit.vue';
-
-// Company routes
 import CompanyView from '@/views/Company/CompanyView.vue';
+import AdminSectionView from '@/views/AdminSection/AdminSectionView.vue';
+import UserIndex from '@/views/AdminSection/Users/UserIndex.vue';
+import UserEdit from '@/views/AdminSection/Users/UserEdit.vue';
+import UserView from '@/views/AdminSection/Users/UserView.vue';
+import UserNew from '@/views/AdminSection/Users/UserNew.vue';
 
-import { isLoggedIn, checkLogin } from '@/store/authStore.js';
+import { useAuthStore } from '@/store/authStore';
+import { storeToRefs } from 'pinia';
 
 const routes = [
   { path: '/', redirect: '/auth' },
@@ -18,7 +22,33 @@ const routes = [
   { path: '/profile', component: ProfileView, meta: { requiresAuth: true } },
   { path: '/profile/edit', component: ProfileEdit, meta: { requiresAuth: true } },
 
-  // company routes
+  { path: '/section-admin', component: AdminSectionView, meta: { requiresAuth: true, requiresAdmin: true } },
+
+  {
+    path: '/section-admin/users',
+    component: UserIndex,
+    meta: { requiresAuth: true, requiresAdmin: true },
+    props: true,
+  },
+  {
+    path: '/section-admin/users/new',
+    component: UserNew,
+    meta: { requiresAuth: true, requiresAdmin: true },
+    props: true,
+  },
+  {
+    path: '/section-admin/users/edit/:id',
+    component: UserEdit,
+    meta: { requiresAuth: true, requiresAdmin: true },
+    props: true,
+  },
+  {
+    path: '/section-admin/users/info/:id',
+    component: UserView,
+    meta: { requiresAuth: true, requiresAdmin: true },
+    props: true,
+  },
+
   { path: '/company-view/info/:id', component: CompanyView, meta: { requiresAuth: true }, props: true },
 ];
 
@@ -28,10 +58,15 @@ const router = createRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  checkLogin();
+  const auth = useAuthStore();
+  const { isLoggedIn, user } = storeToRefs(auth);
+
+  auth.checkLogin();
 
   if (to.meta.requiresAuth && !isLoggedIn.value) {
     next('/auth');
+  } else if (to.meta.requiresAdmin && !user.value?.admin) {
+    next('/home');
   } else if (to.path === '/auth' && isLoggedIn.value) {
     next('/home');
   } else {

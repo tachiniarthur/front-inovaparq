@@ -15,13 +15,18 @@
           <div class="h-10 w-10 flex items-center justify-center bg-primary-600 rounded-full">
             <font-awesome-icon :icon="['fas', 'user']" class="text-2xl" />
           </div>
-          <span class="text-lg font-medium">Arthur</span>
+          <span class="text-lg font-medium">{{ props.user.nome }}</span>
           <font-awesome-icon :icon="['fas', 'chevron-down']" />
         </button>
         <ul v-if="isDropdownOpen" class="absolute right-0 mt-2 w-48 bg-white rounded-lg">
           <router-link :to="'/profile'">
             <li class="px-4 py-2 hover:bg-primary-200 cursor-pointer rounded-t-lg" @click="handleOption('Perfil')">
               Meu perfil
+            </li>
+          </router-link>
+          <router-link :to="'/section-admin'" v-if="props.user.admin">
+            <li class="px-4 py-2 hover:bg-primary-200 cursor-pointer" @click="handleOption('Editar Perfil')">
+              Sessão Admin
             </li>
           </router-link>
           <li class="px-4 py-2 hover:bg-primary-200 cursor-pointer rounded-b-lg" @click="handleOption('Sair')">Sair</li>
@@ -55,6 +60,12 @@
 
 <script setup>
 import { ref } from 'vue';
+
+const props = defineProps({
+  user: Object,
+});
+
+console.log(props.user);
 
 const isDropdownOpen = ref(false);
 const isNotificationsOpen = ref(false);

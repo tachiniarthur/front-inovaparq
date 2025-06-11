@@ -129,15 +129,16 @@
 
 <script setup>
 import { ref } from 'vue';
-import AuthService from '@/services/Auth/AuthService.js';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/store/authStore.js';
 import BaseButton from '@/assets/components/BaseButton.vue';
 import BaseInput from '@/assets/components/BaseInput.vue';
 import PasswordValidation from '@/assets/components/PasswordValidation.vue';
-import { isLoggedIn } from '@/store/authStore.js';
-import router from '@/router';
+import AuthService from '@/services/Auth/AuthService.js';
 
+const router = useRouter();
 const auth = new AuthService();
-
+const authStore = useAuthStore();
 const isRegisterMode = ref(false);
 
 const loginForm = ref({
@@ -162,7 +163,7 @@ function handleLogin() {
     .then((response) => {
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data));
-      isLoggedIn.value = true;
+      authStore.checkLogin();
       router.push({ path: '/home' });
     })
     .finally(() => {
@@ -171,7 +172,7 @@ function handleLogin() {
 }
 
 function handleRegister() {
-  if (registerForm.value.password !== registerForm.value.passwordConfirm) {
+  if (registerForm.value.password !== registerForm.value.confirmPassword) {
     alert('As senhas não coincidem!');
     return;
   }
