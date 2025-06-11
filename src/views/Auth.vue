@@ -115,7 +115,10 @@
         </div>
       </div>
 
-      <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20">
+      <div
+        class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2"
+        :class="{ 'z-0': isLoading, 'z-20': !isLoading }"
+      >
         <button
           @click="toggleMode"
           class="rounded-full bg-primary-900 text-white text-sm hover:bg-primary-800 transition-all duration-300 cursor-pointer w-16 h-16"
@@ -125,6 +128,17 @@
       </div>
     </div>
   </section>
+  <div v-if="isLoading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <BaseModal
+      :open="isLoading"
+      title="Aguarde"
+      description="Estamos processando sua solicitação."
+      icon="ExclamationTriangleIcon"
+      iconColor="text-gray-600"
+      iconBackground="bg-gray-100"
+      @cancel="isLoading = false"
+    />
+  </div>
 </template>
 
 <script setup>
@@ -153,7 +167,7 @@ const registerForm = ref({
   confirmPassword: '',
 });
 
-const isLoading = ref(false);
+const isLoading = ref(true);
 
 function handleLogin() {
   isLoading.value = true;

@@ -1,21 +1,34 @@
 <template>
   <div class="w-full h-full align-center flex justify-center items-center z-10">
     <div class="lds-ellipsis">
-      <div :style="{ background: color }"></div>
-      <div :style="{ background: color }"></div>
-      <div :style="{ background: color }"></div>
-      <div :style="{ background: color }"></div>
+      <div :style="{ background: spinnerColor }"></div>
+      <div :style="{ background: spinnerColor }"></div>
+      <div :style="{ background: spinnerColor }"></div>
+      <div :style="{ background: spinnerColor }"></div>
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from 'vue'
+
+const props = defineProps({
   color: {
     type: String,
     default: '#ffffff',
   },
-});
+})
+
+const colorMap = {
+  primary: 'var(--color-primary-500)',
+  secondary: 'var(--color-secondary-500)',
+  tertiary: 'var(--color-tertiary-500)',
+  quaternary: 'var(--color-quaternary-500)',
+}
+
+const spinnerColor = computed(() => {
+  return colorMap[props.color] || props.color
+})
 </script>
 
 <style>

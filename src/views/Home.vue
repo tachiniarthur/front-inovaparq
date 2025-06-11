@@ -1,10 +1,10 @@
 <template>
-  <div class="h-screen">
+  <div class="h-screen flex flex-col">
     <div class="p-4 pb-0 flex flex-col space-y-4">
       <div class="flex justify-between">
         <h1 class="text-3xl font-medium">Início</h1>
         <router-link
-          :to="'#'"
+          :to="{ path: '/create-company' }"
           class="cursor-pointer flex items-center justify-center gap-2 font-medium bg-primary-400 hover:bg-primary-200 px-3 rounded-lg duration-300"
         >
           Nova Empresa

@@ -1,4 +1,4 @@
-import api from '@/services/api';
+import http from '@/services/http';
 
 export default class AuthService {
   async login(req) {
@@ -13,7 +13,7 @@ export default class AuthService {
 
   async register(req) {
     try {
-      const response = await api.post('/register', req);
+      const response = await http.post('/register', req);
       return response;
     } catch (error) {
       console.error('Erro ao fazer registro:', error);

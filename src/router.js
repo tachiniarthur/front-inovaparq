@@ -4,7 +4,11 @@ import HomeView from '@/views/HomeView.vue';
 import ProfileView from '@/views/Profile/ProfileView.vue';
 import ProfileEdit from '@/views/Profile/ProfileEdit.vue';
 import CompanyView from '@/views/Company/CompanyView.vue';
+
+import CreateCompany from './views/Company/CreateCompany.vue';
+
 import AdminSectionView from '@/views/AdminSection/AdminSectionView.vue';
+
 import UserIndex from '@/views/AdminSection/Users/UserIndex.vue';
 import UserEdit from '@/views/AdminSection/Users/UserEdit.vue';
 import UserView from '@/views/AdminSection/Users/UserView.vue';
@@ -21,6 +25,12 @@ const routes = [
 
   { path: '/profile', component: ProfileView, meta: { requiresAuth: true } },
   { path: '/profile/edit', component: ProfileEdit, meta: { requiresAuth: true } },
+
+  {
+    path: '/create-company',
+    component: CreateCompany,
+    meta: { requiresAuth: true },
+  },
 
   { path: '/section-admin', component: AdminSectionView, meta: { requiresAuth: true, requiresAdmin: true } },
 
