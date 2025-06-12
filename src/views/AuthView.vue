@@ -128,27 +128,16 @@
       </div>
     </div>
   </section>
-  <div v-if="isLoading" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <BaseModal
-      :open="isLoading"
-      title="Aguarde"
-      description="Estamos processando sua solicitação."
-      icon="ExclamationTriangleIcon"
-      iconColor="text-gray-600"
-      iconBackground="bg-gray-100"
-      @cancel="isLoading = false"
-    />
-  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore.js';
-import BaseButton from '@/assets/components/BaseButton.vue';
-import BaseInput from '@/assets/components/BaseInput.vue';
-import PasswordValidation from '@/assets/components/PasswordValidation.vue';
-import AuthService from '@/services/Auth/AuthService.js';
+import BaseButton from '@/components/BaseButton.vue';
+import BaseInput from '@/components/BaseInput.vue';
+import PasswordValidation from '@/components/PasswordValidation.vue';
+import AuthService from '@/services/internal/Auth/AuthService.js';
 
 const router = useRouter();
 const auth = new AuthService();
@@ -167,7 +156,7 @@ const registerForm = ref({
   confirmPassword: '',
 });
 
-const isLoading = ref(true);
+const isLoading = ref(false);
 
 function handleLogin() {
   isLoading.value = true;

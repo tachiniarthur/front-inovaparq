@@ -65,8 +65,6 @@ const props = defineProps({
   user: Object,
 });
 
-console.log(props.user);
-
 const isDropdownOpen = ref(false);
 const isNotificationsOpen = ref(false);
 

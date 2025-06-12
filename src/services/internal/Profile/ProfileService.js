@@ -1,9 +1,9 @@
-import api from '@/services/api';
+import http from '@/services/http';
 
 export default class ProfileService {
   async update(id, req) {
     try {
-      const response = await api.put(`/users/${id}`, req);
+      const response = await http.put(`/users/${id}`, req);
       return response;
     } catch (error) {
       console.error('Erro ao fazer login:', error);
@@ -13,7 +13,7 @@ export default class ProfileService {
 
   async delete(id, req) {
     try {
-      const response = await api.delete(`/users/${id}`, req);
+      const response = await http.delete(`/users/${id}`, req);
       return response;
     } catch (error) {
       console.error('Erro ao fazer registro:', error);

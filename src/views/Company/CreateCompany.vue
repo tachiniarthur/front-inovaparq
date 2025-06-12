@@ -93,10 +93,10 @@
               { value: 'EPP', label: 'Empresa de Pequeno Porte (EPP)' },
               { value: 'LTDA', label: 'Sociedade Limitada (LTDA)' },
               { value: 'SA', label: 'Sociedade Anônima (SA)' },
-              { value: 'EIRELI', label: 'Empresa Individual de Responsabilidade Limitada (EIRELI)' }
+              { value: 'EIRELI', label: 'Empresa Individual de Responsabilidade Limitada (EIRELI)' },
             ]"
             required
-            />
+          />
           <BaseInput
             v-model="form.businessActivity"
             label="Ramo de Atividade"
@@ -247,23 +247,18 @@
                 placeholder="DD/MM/AAAA"
                 v-mask="['##/##/####']"
               />
-              <BaseInput
-                v-model="rep.role"
-                label="Cargo"
-                icon="fa-user-shield"
-                placeholder="Digite o cargo"
-              />
+              <BaseInput v-model="rep.role" label="Cargo" icon="fa-user-shield" placeholder="Digite o cargo" />
             </div>
           </template>
         </div>
         <BaseButton
-        :buttonText="'Adicionar representante legal'"
-        :size="'sm'"
-        :color="'bg-primary-600'"
-        @click="addRepresentative"
+          :buttonText="'Adicionar representante legal'"
+          :size="'sm'"
+          :color="'bg-primary-600'"
+          @click="addRepresentative"
         />
       </div>
-       <!-- Documentos -->
+      <!-- Documentos -->
       <div class="bg-white shadow-md rounded-lg w-full p-8 space-y-6">
         <h2 class="text-lg font-semibold mb-4 border-b pb-2">Documentos</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -305,13 +300,13 @@
       </div>
       <div class="flex justify-end">
         <button
-        type="submit"
-        class="bg-primary-600 hover:bg-primary-700 text-white cursor-pointer font-semibold py-3 px-8 rounded-lg shadow transition"
+          type="submit"
+          class="bg-primary-600 hover:bg-primary-700 text-white cursor-pointer font-semibold py-3 px-8 rounded-lg shadow transition"
         >
-        Salvar Empresa
-      </button>
-    </div>
-  </form>
+          Salvar Empresa
+        </button>
+      </div>
+    </form>
   </div>
 </template>
 
@@ -364,7 +359,7 @@ const form = ref({
       phone: '',
       birthDate: '',
       role: '',
-    }
+    },
   ],
 });
 
@@ -379,7 +374,7 @@ const fetchUsers = async () => {
 onMounted(fetchUsers);
 
 const getAddressFromCep = async (cep) => {
-  if(cep.length === 0) {
+  if (cep.length === 0) {
     form.value.address = '';
     form.value.neighborhood = '';
     form.value.city = '';

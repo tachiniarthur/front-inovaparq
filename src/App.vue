@@ -1,6 +1,6 @@
 <script setup>
 import { onMounted } from 'vue';
-import HeaderComponent from '@/assets/components/HeaderComponent.vue';
+import HeaderComponent from '@/components/HeaderComponent.vue';
 import { useAuthStore } from '@/store/authStore.js';
 
 const authStore = useAuthStore();

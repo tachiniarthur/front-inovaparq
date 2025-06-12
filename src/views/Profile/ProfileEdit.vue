@@ -43,9 +43,9 @@
 
 <script setup>
 import { ref, watch } from 'vue';
-import BaseInput from '@/assets/components/BaseInput.vue';
-import BaseButton from '@/assets/components/BaseButton.vue';
-import ProfileService from '@/services/Profile/ProfileService.js';
+import BaseButton from '@/components/BaseButton.vue';
+import BaseInput from '@/components/BaseInput.vue';
+import ProfileService from '@/services/internal/Profile/ProfileService.js';
 import router from '@/router';
 
 const profileService = new ProfileService();
