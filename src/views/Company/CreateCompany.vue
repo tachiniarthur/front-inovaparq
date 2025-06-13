@@ -1,5 +1,5 @@
 <template>
-  <AppLoading :open="loading" />
+  <AppLoading :open="isLoading" />
   <div class="h-full bg-gray-100 flex flex-col p-6">
     <h1 class="text-2xl font-bold mb-6">Criar Nova Empresa</h1>
     <form @submit.prevent="submitForm" class="space-y-8 max-w-10xl mx-auto">
@@ -112,18 +112,18 @@
         <div class="grid grid-cols-1 md:grid-cols-6 gap-8">
           <div class="md:col-span-2">
             <BaseInput
-              v-model="form.cep"
+              v-model="endereco.cep"
               label="CEP"
               icon="fa-map-marker-alt"
               placeholder="Digite o CEP"
               v-mask="['#####-###']"
               required
-              @input="getAddressFromCep(form.cep)"
+              @input="getAddressFromCep(endereco.cep)"
             />
           </div>
           <div class="md:col-span-1">
             <BaseInput
-              v-model="form.state"
+              v-model="endereco.state"
               label="Estado"
               icon="fa-map-marker-alt"
               placeholder="Estado"
@@ -133,7 +133,7 @@
           </div>
           <div class="md:col-span-3">
             <BaseInput
-              v-model="form.city"
+              v-model="endereco.city"
               label="Cidade"
               icon="fa-map-marker-alt"
               placeholder="Cidade"
@@ -141,9 +141,9 @@
               disabled
             />
           </div>
-          <div class="md:col-span-4">
+          <div class="md:col-span-3">
             <BaseInput
-              v-model="form.address"
+              v-model="endereco.address"
               label="Rua/Logradouro"
               icon="fa-map-marker-alt"
               placeholder="Digite o endereço"
@@ -153,7 +153,7 @@
           </div>
           <div class="md:col-span-1">
             <BaseInput
-              v-model="form.number"
+              v-model="endereco.number"
               label="Número"
               icon="fa-map-marker-alt"
               placeholder="Nº"
@@ -163,7 +163,7 @@
           </div>
           <div class="md:col-span-1">
             <BaseInput
-              v-model="form.neighborhood"
+              v-model="endereco.neighborhood"
               label="Bairro"
               icon="fa-map-marker-alt"
               placeholder="Bairro"
@@ -171,9 +171,9 @@
               disabled
             />
           </div>
-          <div class="md:col-span-2">
+          <div class="md:col-span-1">
             <BaseInput
-              v-model="form.complement"
+              v-model="endereco.complement"
               label="Complemento"
               icon="fa-map-marker-alt"
               placeholder="(opcional)"
@@ -182,90 +182,73 @@
         </div>
       </div>
       <div class="bg-white shadow-md rounded-lg w-full p-8 space-y-6">
-        <h2 class="text-lg font-semibold mb-4 border-b pb-2">Representantes Legais</h2>
-        <div v-for="(rep, idx) in form.legalRepresentatives" :key="idx" class="border-b pb-4 mb-4">
-          <div class="flex items-center gap-4 mb-4">
-            <label class="flex items-center gap-2">
-              <input type="checkbox" v-model="rep.isNew" />
-              <span>Cadastrar novo representante legal</span>
-            </label>
-            <button
-              v-if="form.legalRepresentatives.length > 1"
-              type="button"
-              class="text-red-600 hover:underline ml-auto"
-              @click="removeRepresentative(idx)"
-            >
-              Remover
-            </button>
-          </div>
-          <template v-if="!rep.isNew">
-            <BaseSelect
-              v-model="rep.userId"
-              label="Usuário existente"
-              icon="fa-user"
-              :options="userOptions"
-              placeholder="Selecione um usuário"
+        <h2 class="text-lg font-semibold pb-2">Representantes Legais</h2>
+        <div class="flex items-center gap-4 mb-4">
+          <label class="flex items-center gap-2">
+            <input type="checkbox" v-model="rep.isNew" />
+            <span>Cadastrar novo representante legal</span>
+          </label>
+        </div>
+        <template v-if="!rep.isNew">
+          <BaseSelect
+            v-model="rep.userId"
+            label="Usuário existente"
+            icon="fa-user"
+            :options="userOptions"
+            placeholder="Selecione um usuário"
+            required
+          />
+        </template>
+        <template v-else>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <BaseInput
+              v-model="rep.name"
+              label="Nome completo"
+              icon="fa-user-tie"
+              placeholder="Digite o nome completo"
               required
             />
-          </template>
-          <template v-else>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <BaseInput
-                v-model="rep.name"
-                label="Nome completo"
-                icon="fa-user-tie"
-                placeholder="Digite o nome completo"
-                required
-              />
-              <BaseInput
-                v-model="rep.email"
-                label="E-mail"
-                icon="fa-envelope"
-                placeholder="Digite o e-mail"
-                type="email"
-                required
-              />
-              <BaseInput
-                v-model="rep.cpf"
-                label="CPF"
-                icon="fa-id-card"
-                placeholder="Digite o CPF"
-                v-mask="['###.###.###-##']"
-                required
-              />
-              <BaseInput
-                v-model="rep.phone"
-                label="Telefone"
-                icon="fa-phone"
-                placeholder="Digite o telefone"
-                v-mask="['(##) #####-####', '(##) ####-####']"
-              />
-              <BaseInput
-                v-model="rep.birthDate"
-                label="Data de nascimento"
-                icon="fa-birthday-cake"
-                placeholder="DD/MM/AAAA"
-                v-mask="['##/##/####']"
-              />
-              <BaseInput v-model="rep.role" label="Cargo" icon="fa-user-shield" placeholder="Digite o cargo" />
-            </div>
-          </template>
-        </div>
-        <BaseButton
-          :buttonText="'Adicionar representante legal'"
-          :size="'sm'"
-          :color="'bg-primary-600'"
-          @click="addRepresentative"
-        />
+            <BaseInput
+              v-model="rep.email"
+              label="E-mail"
+              icon="fa-envelope"
+              placeholder="Digite o e-mail"
+              type="email"
+              required
+            />
+            <BaseInput
+              v-model="rep.cpf"
+              label="CPF"
+              icon="fa-id-card"
+              placeholder="Digite o CPF"
+              v-mask="['###.###.###-##']"
+              required
+            />
+            <BaseInput
+              v-model="rep.phone"
+              label="Telefone"
+              icon="fa-phone"
+              placeholder="Digite o telefone"
+              v-mask="['(##) #####-####', '(##) ####-####']"
+            />
+            <BaseInput
+              v-model="rep.birthDate"
+              label="Data de nascimento"
+              icon="fa-birthday-cake"
+              placeholder="DD/MM/AAAA"
+              v-mask="['##/##/####']"
+            />
+            <BaseInput v-model="rep.role" label="Cargo" icon="fa-user-shield" placeholder="Digite o cargo" />
+          </div>
+        </template>
       </div>
-      <!-- Documentos -->
       <div class="bg-white shadow-md rounded-lg w-full p-8 space-y-6">
         <h2 class="text-lg font-semibold mb-4 border-b pb-2">Documentos</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           <BaseInput
             v-model="form.operatingLicense"
             label="Alvará de Funcionamento"
-            icon="fa-file-certificate"
+            icon="fa-certificate"
             placeholder="Insira o alvará de funcionamento"
             required
             type="file"
@@ -288,23 +271,17 @@
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
           />
-          <BaseInput
-            v-model="form.addressProof"
-            label="Documentos do representante legal"
-            icon="fa-id-badge"
-            required
-            type="file"
-            accept=".pdf,.jpg,.jpeg,.png"
-          />
         </div>
       </div>
-      <div class="flex justify-end">
-        <button
-          type="submit"
-          class="bg-primary-600 hover:bg-primary-700 text-white cursor-pointer font-semibold py-3 px-8 rounded-lg shadow transition"
+      <div class="flex justify-between">
+        <router-link
+          to="/home"
+          class="text-md py-3 px-6 bg-secondary-500 text-white cursor-pointer font-bold rounded transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center min-w-[150px] h-[48px]"
         >
-          Salvar Empresa
-        </button>
+          Voltar
+        </router-link>
+        <!-- type="submit" -->
+        <BaseButton :buttonText="'Salvar Empresa'" :color="'bg-primary-700'" :loading="isLoading" @click="teste()" />
       </div>
     </form>
   </div>
@@ -312,18 +289,20 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
-// import { useRouter } from 'vue-router';
 import BaseInput from '@/components/BaseInput.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseButton from '@/components/BaseButton.vue';
+
 import { useViaCEP } from '@/services/external/ViaCepService.js';
+import UserService from '@/services/internal/User/UserService.js';
+
 import { useNotification } from '@/composables/useNotification.js';
 import AppLoading from '@/components/AppLoading.vue';
 
-// const router = useRouter();
+const userService = new UserService();
 const { getAddress } = useViaCEP();
 
-const loading = ref(false);
+const isLoading = ref(false);
 
 const form = ref({
   companyName: '',
@@ -341,78 +320,81 @@ const form = ref({
   operatingLicense: '',
   registrationDocument: '',
   addressProof: '',
+});
+
+const endereco = ref({
+  cep: '',
+  country: '',
+  state: '',
+  city: '',
   address: '',
   neighborhood: '',
-  city: '',
-  cep: '',
-  state: '',
-  country: '',
   number: '',
   complement: '',
-  legalRepresentatives: [
-    {
-      isNew: false,
-      userId: '',
-      name: '',
-      email: '',
-      cpf: '',
-      phone: '',
-      birthDate: '',
-      role: '',
-    },
-  ],
 });
+
+const rep = ref({
+  isNew: false,
+  userId: '',
+  name: '',
+  email: '',
+  cpf: '',
+  phone: '',
+  birthDate: '',
+  role: '',
+});
+
+function teste() {
+  console.log(form.value);
+  console.log(endereco.value);
+  console.log(rep.value);
+}
 
 const userOptions = ref([]);
 const fetchUsers = async () => {
-  userOptions.value = [
-    { value: '1', label: 'Arthur Silva' },
-    { value: '2', label: 'Maria Souza' },
-    { value: '3', label: 'Carlos Oliveira' },
-  ];
+  isLoading.value = true;
+  userService
+    .getAll()
+    .then((response) => {
+      userOptions.value = response.data.map((user) => ({
+        value: user.id,
+        label: `${user.nome} (${user.email})`,
+      }));
+    })
+    .catch((error) => {
+      useNotification().error('Erro ao buscar usuários', error.message);
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 };
-onMounted(fetchUsers);
 
 const getAddressFromCep = async (cep) => {
   if (cep.length === 0) {
-    form.value.address = '';
-    form.value.neighborhood = '';
-    form.value.city = '';
-    form.value.state = '';
+    endereco.value.address = '';
+    endereco.value.neighborhood = '';
+    endereco.value.city = '';
+    endereco.value.state = '';
     return;
   }
   if (!cep || cep.length < 9) {
     return;
   }
-  loading.value = true;
+  isLoading.value = true;
   const { data, error } = await getAddress(cep);
   if (error) {
     useNotification().error('Erro ao buscar endereço', error.message);
   } else if (data) {
-    form.value.address = data.logradouro || '';
-    form.value.neighborhood = data.bairro || '';
-    form.value.city = data.localidade || '';
-    form.value.state = data.uf || '';
-    form.value.country = 'Brasil';
+    endereco.value.address = data.logradouro || '';
+    endereco.value.neighborhood = data.bairro || '';
+    endereco.value.city = data.localidade || '';
+    endereco.value.state = data.uf || '';
+    endereco.value.country = 'Brasil';
   } else {
     useNotification().error('CEP não encontrado', 'Verifique o CEP informado.');
   }
-  loading.value = false;
+  isLoading.value = false;
 };
 
-const addRepresentative = () => {
-  form.value.legalRepresentatives.push({
-    isNew: false,
-    userId: '',
-    name: '',
-    email: '',
-    cpf: '',
-    phone: '',
-    birthDate: '',
-    role: '',
-  });
-};
-const removeRepresentative = (idx) => {
-  form.value.legalRepresentatives.splice(idx, 1);
-};
+onMounted(fetchUsers);
 </script>

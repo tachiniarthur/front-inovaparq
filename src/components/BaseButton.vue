@@ -9,6 +9,7 @@
         'min-w-[150px] h-[48px]',
       ]"
       :disabled="loading"
+      :type="type"
     >
       <div class="flex items-center justify-center">
         <template v-if="loading">
@@ -41,6 +42,10 @@ defineProps({
   loading: {
     type: Boolean,
     default: false,
+  },
+  type: {
+    type: String,
+    default: 'button',
   },
 });
 

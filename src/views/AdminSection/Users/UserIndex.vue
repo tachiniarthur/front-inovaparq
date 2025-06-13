@@ -52,7 +52,7 @@
 
         <div class="col-span-1 flex justify-end relative">
           <button
-            @click="toggleDropdown(item.id)"
+            @click.stop="toggleDropdown(item.id)"
             class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer"
           >
             ⋯
@@ -61,7 +61,14 @@
           <div
             v-if="dropdownOpen === item.id"
             class="absolute right-0 top-10 bg-white border border-gray-200 rounded-md shadow-md z-10 w-36"
+            :ref="(el) => (dropdownRefs[item.id] = el)"
           >
+            <button
+              class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+              @click="handleStatus(item.id)"
+            >
+              {{ item.ativo == 1 ? 'Desativar' : 'Ativar' }}
+            </button>
             <button
               class="w-full text-left px-4 py-2 text-sm text-green-700 hover:bg-gray-100 cursor-pointer"
               @click="handleActions('editar', item.id)"
@@ -82,7 +89,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import router from '@/router';
 import UserService from '@/services/internal/User/UserService';
 
@@ -90,11 +97,18 @@ const service = new UserService();
 const users = ref([]);
 const selectedIds = ref([]);
 const dropdownOpen = ref(null);
+const dropdownRefs = ref({});
 
 onMounted(() => {
   service.getAll().then((response) => {
     users.value = response.data;
   });
+
+  document.addEventListener('click', handleClickOutside);
+});
+
+onBeforeUnmount(() => {
+  document.removeEventListener('click', handleClickOutside);
 });
 
 function toggleSelection(id) {
@@ -109,11 +123,30 @@ function toggleDropdown(id) {
   dropdownOpen.value = dropdownOpen.value === id ? null : id;
 }
 
+function handleClickOutside(event) {
+  if (dropdownOpen.value !== null) {
+    const dropdown = dropdownRefs.value[dropdownOpen.value];
+    if (dropdown && !dropdown.contains(event.target)) {
+      dropdownOpen.value = null;
+    }
+  }
+}
+
 function handleActions(action, id) {
+  dropdownOpen.value = null;
   if (action === 'editar') {
     router.push({ path: `/section-admin/users/edit/${id}` });
   } else if (action === 'excluir') {
     alert(`Excluir usuário ${id}`);
   }
+}
+
+function handleStatus(id) {
+  dropdownOpen.value = null;
+  service.handleStatus(id).then(() => {
+    service.getAll().then((response) => {
+      users.value = response.data;
+    });
+  });
 }
 </script>
