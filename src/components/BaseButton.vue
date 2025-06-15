@@ -9,6 +9,7 @@
         'min-w-[150px] h-[48px]',
       ]"
       :disabled="loading"
+      @click="triggerError"
     >
       <div class="flex items-center justify-center">
         <template v-if="loading">
@@ -19,13 +20,19 @@
         </template>
       </div>
     </button>
+    <div v-if="error" class="text-red-500 text-sm mt-2">
+      {{ error }}
+    </div>
   </div>
 </template>
 
 <script setup>
+import { ref, watch } from 'vue';
 import Spinner from './BaseSpinner.vue';
 
-defineProps({
+const error = ref('');
+
+const props = defineProps({
   buttonText: {
     type: String,
     required: true,
@@ -42,11 +49,23 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  inputValue: {
+    type: String,
+    default: '',
+  }
 });
 
 const sizeClasses = {
   sm: 'text-sm py-2 px-4',
   md: 'text-md py-3 px-6',
   lg: 'text-lg py-4 px-8',
+};
+
+const triggerError = () => {
+  if (!props.inputValue || props.inputValue.length === 0) {
+    error.value = "Preencha o campo corretamente";
+  } else {
+    error.value = '';
+  }
 };
 </script>

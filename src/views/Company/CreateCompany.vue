@@ -257,10 +257,11 @@
           </template>
         </div>
         <BaseButton
-        :buttonText="'Adicionar representante legal'"
-        :size="'sm'"
-        :color="'bg-primary-600'"
-        @click="addRepresentative"
+          :buttonText="'Adicionar representante legal'"
+          :size="'sm'"
+          :color="'bg-primary-600'"
+          :inputValue="form.companyName"
+          @click="addRepresentative"
         />
       </div>
        <!-- Documentos -->
@@ -394,6 +395,8 @@ const getAddressFromCep = async (cep) => {
   if (error) {
     useNotification().error('Erro ao buscar endereço', error.message);
   } else if (data) {
+    form.value.number = '';
+    form.value.complement = '';
     form.value.address = data.logradouro || '';
     form.value.neighborhood = data.bairro || '';
     form.value.city = data.localidade || '';
