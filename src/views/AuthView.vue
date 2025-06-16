@@ -71,6 +71,7 @@
           <form
             v-show="!isRegisterMode"
             class="flex flex-col w-full gap-4 p-4 items-center justify-center"
+            @submit.prevent="handleLogin"
             >
             <div class="w-full flex items-center justify-center py-2 rounded-t-lg">
               <img :src="'./logo-inovaparq.png'" alt="Logo Inovaparq" class="h-auto w-30" />
@@ -78,6 +79,7 @@
             <div class="flex flex-col w-full gap-4 p-4 items-center justify-center">
               <div class="flex flex-col w-full">
                 <BaseInput
+                  label="Usuário"
                   placeholder="Digite seu usuário"
                   icon="id-card"
                   type="text"
@@ -86,19 +88,21 @@
                   v-model="loginForm.username"
                   />
                 </div>
-                <div class="flex flex-col w-full">
-                  <BaseInput
+              <div class="flex flex-col w-full">
+                <BaseInput
+                  label="Senha"
                   placeholder="••••••••••"
                   icon="lock"
                   type="password"
                   name="password"
                   id="password"
                   v-model="loginForm.password"
-                  :error="errorLogin"
                 />
               </div>
               <BaseButton
               :buttonText="'Entrar'"
+              :disabled="true"
+              icon="arrow-right-to-bracket"
               :size="'lg'"
               :loading="isLoading"
               type="button"
@@ -144,6 +148,7 @@ import BaseButton from '@/components/BaseButton.vue';
 import BaseInput from '@/components/BaseInput.vue';
 import PasswordValidation from '@/components/PasswordValidation.vue';
 import AuthService from '@/services/internal/Auth/AuthService.js';
+import { useNotification } from '@/composables/useNotification';
 
 const router = useRouter();
 // const auth = new AuthService();
@@ -154,7 +159,6 @@ const loginForm = ref({
   username: '',
   password: '',
 });
-const errorLogin = ref("");
 
 const registerForm = ref({
   name: '',
@@ -177,7 +181,7 @@ function handleLogin() {
     })
     .catch((error) => {
       console.error('Erro ao fazer login:', error);
-      errorLogin.value = error
+      useNotification().notificationError('Erro ao fazer login', error.response.data)
     })
     .finally(() => {
       isLoading.value = false;
@@ -185,10 +189,16 @@ function handleLogin() {
 }
 
 function handleRegister() {
-  if (registerForm.value.password !== registerForm.value.confirmPassword) {
-    alert('As senhas não coincidem!');
-    return;
-  }
+  AuthService.register(registerForm.value)
+    .then((response) => {
+      console.log('Usuário registrado com sucesso:', response.data);
+      authStore.checkLogin();
+      router.push({ path: '/home' });
+    })
+    .catch((error) => {
+      console.error('Erro ao registrar usuário:', error);
+      useNotification().notificationError('Erro ao registrar usuário', error.response.data);
+    });
 }
 
 function toggleMode() {

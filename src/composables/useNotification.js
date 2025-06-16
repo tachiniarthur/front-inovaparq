@@ -1,10 +1,12 @@
-export const useNotification = () => {
-  const notificationShow = useState("show", () => false);
-  const notificationMessage = useState("message", () => "");
-  const notificationDescription = useState("description", () => "");
-  const notificationType = useState("type", () => "default");
-  const notificationColor = useState("color", () => "");
-  const progress = useState("progress", () => 100);
+import { ref } from "vue";
+
+export function useNotification() {
+  const notificationShow = ref(false);
+  const notificationMessage = ref("");
+  const notificationDescription = ref("");
+  const notificationType = ref("default");
+  const notificationColor = ref("");
+  const progress = ref(100);
 
   let timer = null;
   let progressTimer = null;
@@ -71,17 +73,18 @@ export const useNotification = () => {
   }
 
   return {
-    notificationSuccess,
-    notificationError,
-    notificationWarning,
-    notificationInfo,
     notificationShow,
     notificationMessage,
     notificationDescription,
     notificationType,
     notificationColor,
     progress,
+    showNotification,
     clearNotification,
+    notificationSuccess,
+    notificationError,
+    notificationWarning,
+    notificationInfo,
     showMultipleErrors
   };
-};
+}

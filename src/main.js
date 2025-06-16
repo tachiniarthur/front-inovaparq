@@ -2,6 +2,7 @@ import './assets/main.css';
 
 import { createApp } from 'vue';
 import { createPinia } from 'pinia';
+import VueTippy from 'vue-tippy'
 import App from './App.vue';
 import router from './router';
 
@@ -17,5 +18,6 @@ app.component('font-awesome-icon', FontAwesomeIcon);
 
 app.use(router);
 app.use(createPinia());
+app.use(VueTippy);
 app.use(VueTheMask);
 app.mount('#app');

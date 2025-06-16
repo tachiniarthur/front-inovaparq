@@ -38,8 +38,9 @@
 </template>
 
 <script setup>
+import { computed } from 'vue'
 import { ExclamationTriangleIcon, XMarkIcon, InformationCircleIcon, XCircleIcon, CheckCircleIcon } from '@heroicons/vue/20/solid'
-
+import { useNotification } from '@/composables/useNotification'
 const { notificationType: type, notificationShow: show, notificationMessage: message, notificationDescription: description, notificationColor: color } = useNotification()
 
 const style = computed(() => {

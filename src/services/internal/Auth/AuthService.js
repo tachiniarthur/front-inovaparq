@@ -13,7 +13,7 @@ export const AuthService = {
 
   async register(req) {
     try {
-      const response = await http.post('/register', req);
+      const response = await http.post('/users', req);
       return response;
     } catch (error) {
       console.error('Erro ao fazer registro:', error);
