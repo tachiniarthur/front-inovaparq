@@ -10,6 +10,7 @@
       ]"
       :disabled="loading"
       @click="triggerError"
+      :type="type"
     >
       <div class="flex items-center justify-center">
         <template v-if="loading">
@@ -27,7 +28,7 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import Spinner from './BaseSpinner.vue';
 
 const error = ref('');
@@ -52,7 +53,11 @@ const props = defineProps({
   inputValue: {
     type: String,
     default: '',
-  }
+  },
+  type: {
+    type: String,
+    default: 'button',
+  },
 });
 
 const sizeClasses = {
@@ -63,7 +68,7 @@ const sizeClasses = {
 
 const triggerError = () => {
   if (!props.inputValue || props.inputValue.length === 0) {
-    error.value = "Preencha o campo corretamente";
+    error.value = 'Preencha o campo corretamente';
   } else {
     error.value = '';
   }

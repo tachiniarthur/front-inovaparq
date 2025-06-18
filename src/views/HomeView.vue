@@ -23,7 +23,8 @@
         <h2 class="text-lg font-bold mb-4 text-center">{{ step.title }}</h2>
 
         <div class="flex-1 space-y-3 min-h-0 overflow-y-auto hide-scrollbar">
-          <div
+          <router-link
+            :to="'/company-view/info/' + card.id"
             v-for="card in cards.filter((c) => c.status === step.id)"
             :key="card.id"
             class="bg-gray-100 p-3 rounded shadow cursor-pointer flex flex-col"
@@ -32,7 +33,7 @@
           >
             <span class="text-md">{{ card.title }}</span>
             <span class="text-xs">Responsável: {{ card.resp }}</span>
-          </div>
+          </router-link>
         </div>
       </div>
     </div>

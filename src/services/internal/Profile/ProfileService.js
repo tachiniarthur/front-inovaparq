@@ -1,9 +1,9 @@
 import http from '@/services/http';
 
-export default class AuthService {
-  async login(req) {
+export default class ProfileService {
+  async update(id, req) {
     try {
-      const response = await http.post('/login/', req);
+      const response = await http.put(`/users/${id}`, req);
       return response;
     } catch (error) {
       console.error('Erro ao fazer login:', error);
@@ -11,9 +11,9 @@ export default class AuthService {
     }
   }
 
-  async register(req) {
+  async delete(id, req) {
     try {
-      const response = await http.post('/register', req);
+      const response = await http.delete(`/users/${id}`, req);
       return response;
     } catch (error) {
       console.error('Erro ao fazer registro:', error);

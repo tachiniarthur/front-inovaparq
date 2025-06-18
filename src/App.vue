@@ -1,18 +1,20 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import HeaderComponent from '@/components/HeaderComponent.vue';
+import { useAuthStore } from '@/store/authStore.js';
 
-const isLoggedIn = ref(true);
+const authStore = useAuthStore();
 
-// onMounted(() => {
-//   const token = localStorage.getItem('token');
-//   isLoggedIn.value = !!token;
-// });
+onMounted(() => {
+  authStore.checkLogin();
+});
 </script>
 
 <template>
-  <div>
-    <HeaderComponent v-if="isLoggedIn" />
-    <router-view />
+  <div class="min-h-screen bg-gray-100 flex flex-col">
+    <HeaderComponent v-if="authStore.isLoggedIn" :user="authStore.user" />
+    <main class="flex-1">
+      <router-view />
+    </main>
   </div>
 </template>

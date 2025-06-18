@@ -21,8 +21,6 @@
             </div>
             <div class="flex flex-col w-full gap-4 p-4 overflow-y-auto custom-scroll">
               <div class="flex flex-col w-full">
-                <!-- <label for="name">Nome</label>
-                <input type="text" id="name" class="border-2 rounded-lg" v-model="registerForm.name" /> -->
                 <BaseInput
                   label="Nome"
                   placeholder="Digite seu nome"
@@ -41,10 +39,6 @@
                   id="user"
                   v-model="registerForm.username"
                 />
-                <!-- <label for="email">E-mail</label>
-                <input type="email" id="email" class="border-2 rounded-lg" v-model="registerForm.email" /> -->
-                <!-- <label for="password">Senha</label>
-                <input type="password" id="passwordRegister" class="border-2 rounded-lg" v-model="registerForm.password" /> -->
                 <BaseInput
                   label="Senha"
                   placeholder="••••••••••"
@@ -54,13 +48,6 @@
                   id="passwordRegister"
                   v-model="registerForm.password"
                 />
-                <!-- <label for="confirmPassword">Confirmar Senha</label>
-                <input
-                  type="password"
-                  id="confirmPassword"
-                  class="border-2 rounded-lg"
-                  v-model="registerForm.confirmPassword"
-                /> -->
                 <BaseInput
                   label="Confirmar Senha"
                   placeholder="••••••••••"
@@ -70,19 +57,13 @@
                   id="confirmPassword"
                   v-model="registerForm.confirmPassword"
                 />
-                <!-- <button type="submit" class="w-full border bg-primary-500 text-lg text-white rounded-md px-12">
-                  Criar
-                </button> -->
-                <PasswordValidation
-                  :password="registerForm.password"
-                  :confirmPassword="registerForm.confirmPassword"
-                />
+                <PasswordValidation :password="registerForm.password" :confirmPassword="registerForm.confirmPassword" />
                 <BaseButton
-                :buttonText="'Criar'"
-                :size="'lg'"
-                :loading="isLoading"
-                @click="handleRegister"
-                class="self-center"
+                  :buttonText="'Criar'"
+                  :size="'lg'"
+                  :loading="isLoading"
+                  @click="handleRegister"
+                  class="self-center"
                 />
               </div>
             </div>
@@ -97,44 +78,26 @@
             </div>
             <div class="flex flex-col w-full gap-4 p-4 items-center justify-center">
               <div class="flex flex-col w-full">
-                <!-- <label for="user">Usuário</label> -->
-                <!-- <input type="text" name="user" id="user" class="border-2 rounded-lg" v-model="loginForm.username" /> -->
                 <BaseInput
-                  label="Usuário"
                   placeholder="Digite seu usuário"
                   icon="id-card"
                   type="text"
-                  name="user"
-                  id="user"
+                  name="username"
+                  id="username"
                   v-model="loginForm.username"
-                  />
+                />
               </div>
               <div class="flex flex-col w-full">
                 <BaseInput
-                label="Senha"
-                placeholder="••••••••••"
-                icon="lock"
-                type="password"
-                name="password"
-                id="password"
-                v-model="loginForm.password"
-                />
-                <!-- <label for="password">Senha</label>
-                <input
+                  placeholder="••••••••••"
+                  icon="lock"
                   type="password"
                   name="password"
                   id="password"
-                  class="border-2 rounded-lg"
                   v-model="loginForm.password"
                 />
-                <span class="text-md flex justify-start items-start text-blue-600">Esqueceu sua senha?</span> -->
               </div>
-              <BaseButton
-              :buttonText="'Entrar'"
-              :size="'lg'"
-              :loading="isLoading"
-              @click="handleLogin"
-              />
+              <BaseButton :buttonText="'Entrar'" :size="'lg'" :loading="isLoading" @click="handleLogin" />
             </div>
           </form>
         </div>
@@ -165,62 +128,57 @@
       </div>
     </div>
   </section>
-  <div
-    v-if="isLoading"
-    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-    <BaseModal
-      :open="isLoading"
-      title="Aguarde"
-      description="Estamos processando sua solicitação."
-      icon="ExclamationTriangleIcon"
-      iconColor="text-gray-600"
-      iconBackground="bg-gray-100"
-      @cancel="isLoading = false"
-    />
-  </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
-// import AuthService from '@/services/Auth/AuthService.js';
+import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/store/authStore.js';
 import BaseButton from '@/components/BaseButton.vue';
 import BaseInput from '@/components/BaseInput.vue';
 import PasswordValidation from '@/components/PasswordValidation.vue';
-import BaseModal from '@/components/BaseModal.vue';
+import AuthService from '@/services/internal/Auth/AuthService.js';
 
-// const auth = new AuthService();
-
+const router = useRouter();
+const auth = new AuthService();
+const authStore = useAuthStore();
 const isRegisterMode = ref(false);
 
 const loginForm = ref({
   username: '',
   password: '',
-})
+});
 
 const registerForm = ref({
   name: '',
   email: '',
   password: '',
   confirmPassword: '',
-})
+});
 
-const isLoading = ref(true);
+const isLoading = ref(false);
 
 function handleLogin() {
   isLoading.value = true;
-  console.log('Login:', loginForm.value);
 
-  setTimeout(() => {
-    isLoading.value = false;
-  }, 2000);
+  auth
+    .login(loginForm.value)
+    .then((response) => {
+      localStorage.setItem('token', response.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
+      authStore.checkLogin();
+      router.push({ path: '/home' });
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 }
 
 function handleRegister() {
   if (registerForm.value.password !== registerForm.value.confirmPassword) {
-      alert('As senhas não coincidem!');
-      return;
-    }
+    alert('As senhas não coincidem!');
+    return;
+  }
 }
 
 function toggleMode() {
