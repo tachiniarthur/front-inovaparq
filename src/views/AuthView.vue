@@ -154,6 +154,7 @@ const router = useRouter();
 // const auth = new AuthService();
 const authStore = useAuthStore();
 const isRegisterMode = ref(false);
+const notification = useNotification();
 
 const loginForm = ref({
   username: '',
@@ -162,7 +163,7 @@ const loginForm = ref({
 
 const registerForm = ref({
   name: '',
-  email: '',
+  username: '',
   password: '',
   confirmPassword: '',
 });
@@ -181,7 +182,7 @@ function handleLogin() {
     })
     .catch((error) => {
       console.error('Erro ao fazer login:', error);
-      useNotification().notificationError('Erro ao fazer login', error.response.data)
+      notification.notificationError("Erro ao fazer login", String(error.response.data))
     })
     .finally(() => {
       isLoading.value = false;
@@ -189,6 +190,7 @@ function handleLogin() {
 }
 
 function handleRegister() {
+  console.log(registerForm.value)
   AuthService.register(registerForm.value)
     .then((response) => {
       console.log('Usuário registrado com sucesso:', response.data);
@@ -197,7 +199,7 @@ function handleRegister() {
     })
     .catch((error) => {
       console.error('Erro ao registrar usuário:', error);
-      useNotification().notificationError('Erro ao registrar usuário', error.response.data);
+      notification.notificationError('Erro ao registrar usuário', error.response.data);
     });
 }
 

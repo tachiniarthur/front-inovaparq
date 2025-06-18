@@ -2,7 +2,7 @@
 import { onMounted } from 'vue';
 import HeaderComponent from '@/components/HeaderComponent.vue';
 import { useAuthStore } from '@/store/authStore.js';
-import AppNotification from './components/AppNotification.vue';
+import AppNotification from '@/components/AppNotification.vue';
 
 const authStore = useAuthStore();
 
