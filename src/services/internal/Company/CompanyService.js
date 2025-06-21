@@ -1,14 +1,12 @@
 import http from '@/services/http';
 
-export default class AuthService {
-  async getInfoCompany(req) {
+export default class CompanyService {
+  async getAll(id) {
     try {
-      console.log('oi');
-
-      //   const response = await api.post('/login/', req);
-      //   return response;
+      const response = await http.get(`/companies/list/${id}`);
+      return response;
     } catch (error) {
-      console.error('Erro ao buscar empresa:', error);
+      console.error('Erro ao obter empresas:', error);
       throw error;
     }
   }

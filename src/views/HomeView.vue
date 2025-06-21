@@ -41,7 +41,24 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import CompanyService from '@/services/internal/Company/CompanyService.js';
+
+const user = ref(localStorage.getItem('user'));
+const userParsed = JSON.parse(user.value);
+
+const service = new CompanyService();
+const companies = ref([]);
+
+onMounted(async () => {
+  try {
+    const response = await service.getAll(userParsed.id);
+    companies.value = response.data;
+    console.log('Empresas carregadas:', companies.value);
+  } catch (error) {
+    console.error('Erro ao carregar empresas:', error);
+  }
+});
 
 const steps = ref([
   { id: 'todo', title: 'A Fazer' },
