@@ -18,21 +18,43 @@ import { useAuthStore } from '@/store/authStore';
 import { storeToRefs } from 'pinia';
 
 const routes = [
-  { path: '/', redirect: '/auth' },
-  { path: '/auth', component: AuthView },
-  { path: '/login', redirect: '/auth' },
-  { path: '/home', component: HomeView, meta: { requiresAuth: true } },
-
-  { path: '/profile', component: ProfileView, meta: { requiresAuth: true } },
-  { path: '/profile/edit', component: ProfileEdit, meta: { requiresAuth: true } },
-
+  {
+    path: '/',
+    redirect: '/auth'
+  },
+  {
+    path: '/auth',
+    component: AuthView
+  },
+  {
+    path: '/login',
+    redirect: '/auth'
+  },
+  {
+    path: '/home',
+    component: HomeView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile',
+    component: ProfileView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile/edit',
+    component: ProfileEdit,
+    meta: { requiresAuth: true }
+  },
   {
     path: '/create-company',
     component: CreateCompany,
     meta: { requiresAuth: true },
   },
-
-  { path: '/section-admin', component: AdminSectionView, meta: { requiresAuth: true, requiresAdmin: true } },
+  {
+    path: '/section-admin',
+    component: AdminSectionView,
+    meta: { requiresAuth: true, requiresAdmin: true }
+  },
 
   {
     path: '/section-admin/users',
@@ -59,7 +81,12 @@ const routes = [
     props: true,
   },
 
-  { path: '/company-view/info/:id', component: CompanyView, meta: { requiresAuth: true }, props: true },
+  {
+    path: '/company-view/info/:id',
+    component: CompanyView,
+    meta: { requiresAuth: true },
+    props: true
+  },
 ];
 
 const router = createRouter({
@@ -67,14 +94,18 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   const auth = useAuthStore();
   const { isLoggedIn, user } = storeToRefs(auth);
 
-  auth.checkLogin();
+  // await auth.checkLogin();
 
   if (to.meta.requiresAuth && !isLoggedIn.value) {
-    next('/auth');
+    if (to.path !== '/auth') {
+      next('/auth');
+    } else {
+      next();
+    }
   } else if (to.meta.requiresAdmin && !user.value?.admin) {
     next('/home');
   } else if (to.path === '/auth' && isLoggedIn.value) {

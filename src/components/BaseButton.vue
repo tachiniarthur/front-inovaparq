@@ -12,12 +12,17 @@
       @click="triggerError"
       :type="type"
     >
-      <div class="flex items-center justify-center">
+      <div class="flex items-center justify-center gap-2">
         <template v-if="loading">
           <Spinner />
         </template>
         <template v-else>
-          {{ buttonText }}
+          <span>{{ buttonText }}</span>
+          <font-awesome-icon
+            v-if="icon"
+            :icon="icon"
+            class="text-white"
+          />
         </template>
       </div>
     </button>
@@ -30,6 +35,7 @@
 <script setup>
 import { ref } from 'vue';
 import Spinner from './BaseSpinner.vue';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
 const error = ref('');
 
@@ -57,6 +63,10 @@ const props = defineProps({
   type: {
     type: String,
     default: 'button',
+  },
+  icon: {
+    type: [String, Array],
+    default: null,
   },
 });
 

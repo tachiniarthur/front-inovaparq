@@ -21,12 +21,12 @@ api.interceptors.response.use(
   (response) => {
     return response;
   },
-  (error) => {
-    if (error.response && error.response.status === 401) {
-      window.location = '/';
-    }
-    return Promise.reject(error);
-  }
+  // (error) => {
+  //   if (error.response && error.response.status === 401) {
+  //     window.location = '/auth';
+  //   }
+  //   return Promise.reject(error);
+  // }
 );
 
 export default api;

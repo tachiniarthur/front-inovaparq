@@ -1,87 +1,90 @@
-export const useNotification = () => {
-  const notificationShow = useState("show", () => false);
-  const notificationMessage = useState("message", () => "");
-  const notificationDescription = useState("description", () => "");
-  const notificationType = useState("type", () => "default");
-  const notificationColor = useState("color", () => "");
-  const progress = useState("progress", () => 100);
+import { ref } from "vue";
 
-  let timer = null;
-  let progressTimer = null;
+const notificationShow = ref(false);
+const notificationMessage = ref("");
+const notificationDescription = ref("");
+const notificationType = ref("default");
+const notificationColor = ref("");
+const progress = ref(100);
 
-  function showNotification(type, color, message, description = "", duration = 3000) {
-    notificationShow.value = true;
-    notificationMessage.value = message;
-    notificationDescription.value = description;
-    notificationType.value = type;
-    notificationColor.value = color;
-    progress.value = 100;
+let timer = null;
+let progressTimer = null;
 
-    clearTimeout(timer);
-    clearInterval(progressTimer);
+function showNotification(type, color, message, description = "", duration = 3000) {
+  notificationShow.value = true;
+  notificationMessage.value = message;
+  notificationDescription.value = description;
+  notificationType.value = type;
+  notificationColor.value = color;
+  progress.value = 100;
 
-    const interval = 100;
-    const step = (100 / duration) * interval;
+  clearTimeout(timer);
+  clearInterval(progressTimer);
 
-    progressTimer = setInterval(() => {
-      if (progress.value > 0) {
-        progress.value -= step;
-      } else {
-        clearInterval(progressTimer);
-      }
-    }, interval);
+  const interval = 100;
+  const step = (100 / duration) * interval;
 
-    timer = setTimeout(clearNotification, duration);
-  }
+  progressTimer = setInterval(() => {
+    if (progress.value > 0) {
+      progress.value -= step;
+    } else {
+      clearInterval(progressTimer);
+    }
+  }, interval);
 
-  function clearNotification() {
-    notificationShow.value = false;
-    notificationMessage.value = "";
-    notificationDescription.value = "";
-    notificationType.value = "default";
-    notificationColor.value = "";
-    progress.value = 100;
+  timer = setTimeout(clearNotification, duration);
+}
 
-    clearTimeout(timer);
-    clearInterval(progressTimer);
-  }
+function clearNotification() {
+  notificationShow.value = false;
+  notificationMessage.value = "";
+  notificationDescription.value = "";
+  notificationType.value = "default";
+  notificationColor.value = "";
+  progress.value = 100;
 
-  function notificationSuccess(message, description = "", duration = 5000) {
-    showNotification("success", "green", message, description, duration);
-  }
+  clearTimeout(timer);
+  clearInterval(progressTimer);
+}
 
-  function notificationError(message, description = "", duration = 5000) {
-    showNotification("error", "red", message, description, duration);
-  }
+function notificationSuccess(message, description = "", duration = 5000) {
+  showNotification("success", "green", message, description, duration);
+}
 
-  function notificationWarning(message, description = "", duration = 5000) {
-    showNotification("warning", "yellow", message, description, duration);
-  }
+function notificationError(message, description = "", duration = 5000) {
+  showNotification("error", "red", message, description, duration);
+}
 
-  function notificationInfo(message, description = "", duration = 5000) {
-    showNotification("info", "blue", message, description, duration);
-  }
+function notificationWarning(message, description = "", duration = 5000) {
+  showNotification("warning", "yellow", message, description, duration);
+}
 
-  function showMultipleErrors(errors, type = "error", color = "red", duration = 5000) {
-    errors.forEach((error, index) => {
-      setTimeout(() => {
-        showNotification(type, color, error, "", duration);
-      }, index * (duration + 500));
-    });
-  }
+function notificationInfo(message, description = "", duration = 5000) {
+  showNotification("info", "blue", message, description, duration);
+}
 
+function showMultipleErrors(errors, type = "error", color = "red", duration = 5000) {
+  errors.forEach((error, index) => {
+    setTimeout(() => {
+      showNotification(type, color, error, "", duration);
+    }, index * (duration + 500));
+  });
+}
+
+export function useNotification() {
   return {
-    notificationSuccess,
-    notificationError,
-    notificationWarning,
-    notificationInfo,
     notificationShow,
     notificationMessage,
     notificationDescription,
     notificationType,
     notificationColor,
     progress,
+    showNotification,
     clearNotification,
+    notificationSuccess,
+    notificationError,
+    notificationWarning,
+    notificationInfo,
     showMultipleErrors
   };
-};
+}
