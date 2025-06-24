@@ -3,7 +3,11 @@ import AuthView from '@/views/AuthView.vue';
 import HomeView from '@/views/HomeView.vue';
 import ProfileView from '@/views/Profile/ProfileView.vue';
 import ProfileEdit from '@/views/Profile/ProfileEdit.vue';
-import CompanyView from '@/views/Company/CompanyView.vue';
+
+import InformacoesBasicasView from '@/views/Company/View/InformacoesBasicasView.vue';
+import EnderecoView from '@/views/Company/View/EnderecoView.vue';
+import RepresentanteLegalView from '@/views/Company/View/RepresentanteLegalView.vue';
+import DocumentosView from '@/views/Company/View/DocumentosView.vue';
 
 import CreateCompany from './views/Company/CreateCompany.vue';
 
@@ -20,30 +24,30 @@ import { storeToRefs } from 'pinia';
 const routes = [
   {
     path: '/',
-    redirect: '/auth'
+    redirect: '/auth',
   },
   {
     path: '/auth',
-    component: AuthView
+    component: AuthView,
   },
   {
     path: '/login',
-    redirect: '/auth'
+    redirect: '/auth',
   },
   {
     path: '/home',
     component: HomeView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: '/profile',
     component: ProfileView,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: '/profile/edit',
     component: ProfileEdit,
-    meta: { requiresAuth: true }
+    meta: { requiresAuth: true },
   },
   {
     path: '/create-company',
@@ -53,7 +57,7 @@ const routes = [
   {
     path: '/section-admin',
     component: AdminSectionView,
-    meta: { requiresAuth: true, requiresAdmin: true }
+    meta: { requiresAuth: true, requiresAdmin: true },
   },
 
   {
@@ -82,10 +86,28 @@ const routes = [
   },
 
   {
-    path: '/company-view/info/:id',
-    component: CompanyView,
+    path: '/company-view/informacoes-basicas/:id',
+    component: InformacoesBasicasView,
     meta: { requiresAuth: true },
-    props: true
+    props: true,
+  },
+  {
+    path: '/company-view/endereco/:id',
+    component: EnderecoView,
+    meta: { requiresAuth: true },
+    props: true,
+  },
+  {
+    path: '/company-view/representantes-legais/:id',
+    component: RepresentanteLegalView,
+    meta: { requiresAuth: true },
+    props: true,
+  },
+  {
+    path: '/company-view/documentos/:id',
+    component: DocumentosView,
+    meta: { requiresAuth: true },
+    props: true,
   },
 ];
 
