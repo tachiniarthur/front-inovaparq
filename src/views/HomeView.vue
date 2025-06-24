@@ -42,21 +42,23 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useNotification } from '@/composables/useNotification';
 import CompanyService from '@/services/internal/Company/CompanyService.js';
 
 const user = ref(localStorage.getItem('user'));
-const userParsed = JSON.parse(user.value);
+const userParsed = JSON.parse(user.value).data;
 
-const service = new CompanyService();
+const notification = useNotification();
 const companies = ref([]);
 
 onMounted(async () => {
   try {
-    const response = await service.getAll(userParsed.id);
+    const response = await CompanyService.getAll(userParsed.id);
     companies.value = response.data;
     console.log('Empresas carregadas:', companies.value);
   } catch (error) {
     console.error('Erro ao carregar empresas:', error);
+    notification.notificationError('Erro ao carregar empresas', error.data.message);
   }
 });
 

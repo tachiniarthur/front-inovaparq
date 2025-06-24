@@ -1,8 +1,8 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: import.meta.env.VITE_API_URL });
+const http = axios.create({ baseURL: import.meta.env.VITE_API_URL });
 
-api.interceptors.request.use(
+http.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -17,16 +17,24 @@ api.interceptors.request.use(
   }
 );
 
-api.interceptors.response.use(
+http.interceptors.response.use(
   (response) => {
     return response;
   },
-  // (error) => {
-  //   if (error.response && error.response.status === 401) {
-  //     window.location = '/auth';
-  //   }
-  //   return Promise.reject(error);
-  // }
+  (error) => {
+    const customError = {
+      status: error.response?.status,
+      data: error.response?.data || null,
+    };
+
+    // Se quiser redirecionar em caso de 401:
+    // if (customError.status === 401) {
+    //   window.location = '/auth';
+    // }
+
+    return Promise.reject(customError); // retorna só o necessário
+  }
 );
 
-export default api;
+
+export default http;

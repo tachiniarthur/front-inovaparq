@@ -53,17 +53,19 @@
                   placeholder="••••••••••"
                   icon="lock"
                   type="password"
-                  name="confirmPassword"
-                  id="confirmPassword"
-                  v-model="registerForm.confirmPassword"
+                  name="confirm_password"
+                  id="confirm_password"
+                  v-model="registerForm.confirm_password"
+                  :error="errorRegister"
                 />
-                <PasswordValidation :password="registerForm.password" :confirmPassword="registerForm.confirmPassword" />
+                <PasswordValidation :password="registerForm.password" :confirmPassword="registerForm.confirm_password" />
                 <BaseButton
                   :buttonText="'Criar'"
                   :size="'lg'"
                   :loading="isLoading"
                   @click="handleRegister"
                   class="self-center"
+                  type="submit"
                 />
               </div>
             </div>
@@ -97,6 +99,7 @@
                   name="password"
                   id="password"
                   v-model="loginForm.password"
+                  :error="errorLogin"
                 />
               </div>
               <BaseButton
@@ -105,7 +108,7 @@
               icon="arrow-right-to-bracket"
               :size="'lg'"
               :loading="isLoading"
-              type="button"
+              type="submit"
               @click="handleLogin"
               />
             </div>
@@ -160,13 +163,15 @@ const loginForm = ref({
   username: '',
   password: '',
 });
+const errorLogin = ref("")
 
 const registerForm = ref({
   name: '',
   username: '',
   password: '',
-  confirmPassword: '',
+  confirm_password: '',
 });
+const errorRegister = ref("")
 
 const isLoading = ref(false);
 
@@ -175,12 +180,14 @@ function handleLogin() {
 
   AuthService.login(loginForm.value)
     .then((response) => {
+      notification.notificationSuccess('Sucesso', response.data.message);
       localStorage.setItem('token', response.data.token);
       localStorage.setItem('user', JSON.stringify(response.data));
       authStore.checkLogin();
       router.push({ path: '/home' });
     })
     .catch((error) => {
+      errorLogin.value = error.response.data
       console.error('Erro ao fazer login:', error);
       notification.notificationError("Erro ao fazer login", String(error.response.data))
     })
@@ -190,16 +197,19 @@ function handleLogin() {
 }
 
 function handleRegister() {
-  console.log(registerForm.value)
   AuthService.register(registerForm.value)
     .then((response) => {
-      console.log('Usuário registrado com sucesso:', response.data);
+      console.log('Usuário registrado com sucesso:', response);
+      notification.notificationSuccess('Sucesso', response.message);
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('user', JSON.stringify(response.data));
       authStore.checkLogin();
       router.push({ path: '/home' });
     })
     .catch((error) => {
+      errorRegister.value = error.data.message
       console.error('Erro ao registrar usuário:', error);
-      notification.notificationError('Erro ao registrar usuário', error.response.data);
+      notification.notificationError('Erro ao registrar usuário', error.data.message);
     });
 }
 

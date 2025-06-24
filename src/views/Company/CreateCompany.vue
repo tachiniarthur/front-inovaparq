@@ -183,10 +183,16 @@
       </div>
       <div class="bg-white shadow-md rounded-lg w-full p-8 space-y-6">
         <h2 class="text-lg font-semibold pb-2">Representantes Legais</h2>
-        <div class="flex items-center gap-4 mb-4">
+         <div class="flex items-center gap-4 mb-4">
           <label class="flex items-center gap-2">
-            <input type="checkbox" v-model="rep.isNew" />
-            <span>Cadastrar novo representante legal</span>
+            <BaseSwitch
+              v-model="rep.isNew"
+              size="md"
+              label="Cadastrar novo representante legal"
+              @change="rep.isNew = !rep.isNew"
+            />
+            <!-- <input type="checkbox" v-model="rep.isNew" />
+            <span>Cadastrar novo representante legal</span> -->
           </label>
         </div>
         <template v-if="!rep.isNew">
@@ -245,6 +251,7 @@
       <div class="bg-white shadow-md rounded-lg w-full p-8 space-y-6">
         <h2 class="text-lg font-semibold mb-4 border-b pb-2">Documentos</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- 4. Inputs de arquivo com @change -->
           <BaseInput
             v-model="form.operatingLicense"
             label="Alvará de Funcionamento"
@@ -253,6 +260,7 @@
             required
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
+            @change="handleOperatingLicenseChange"
           />
           <BaseInput
             v-model="form.registrationDocument"
@@ -262,6 +270,7 @@
             required
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
+            @change="handleRegistrationDocumentChange"
           />
           <BaseInput
             v-model="form.addressProof"
@@ -270,6 +279,7 @@
             required
             type="file"
             accept=".pdf,.jpg,.jpeg,.png"
+            @change="handleAddressProofChange"
           />
         </div>
       </div>
@@ -280,26 +290,51 @@
         >
           Voltar
         </router-link>
-        <!-- type="submit" -->
-        <BaseButton :buttonText="'Salvar Empresa'" :color="'bg-primary-700'" :loading="isLoading" @click="teste()" />
+        <span v-if="!isFormValid">
+          <BaseButton
+            :buttonText="'Salvar Empresa'"
+            :color="'bg-primary-700'"
+            :loading="isLoading"
+            :disabled="!isFormValid"
+            @click="submit()"
+            v-tippy="{
+              content: 'Preencha todos os campos obrigatórios para salvar',
+              placement: 'top',
+              arrow: true
+            }"
+          />
+        </span>
+        <template v-else>
+          <BaseButton
+            :buttonText="'Salvar Empresa'"
+            :color="'bg-primary-700'"
+            :loading="isLoading"
+            :disabled="!isFormValid"
+            @click="submit()"
+          />
+        </template>
       </div>
     </form>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import BaseInput from '@/components/BaseInput.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseButton from '@/components/BaseButton.vue';
+import BaseSwitch from '@/components/BaseSwitch.vue';
+import { useRouter } from 'vue-router';
 
 import { useViaCEP } from '@/services/external/ViaCepService.js';
 import UserService from '@/services/internal/User/UserService.js';
+import CompanyService from '@/services/internal/Company/CompanyService';
 
 import { useNotification } from '@/composables/useNotification.js';
 import AppLoading from '@/components/AppLoading.vue';
 
-const userService = new UserService();
+const notification = useNotification();
+const router = useRouter();
 const { getAddress } = useViaCEP();
 
 const isLoading = ref(false);
@@ -344,17 +379,75 @@ const rep = ref({
   role: '',
 });
 
-function teste() {
-  console.log(form.value);
-  console.log(endereco.value);
-  console.log(rep.value);
+// 1. Criar refs para os arquivos
+const operatingLicenseFile = ref(null);
+const registrationDocumentFile = ref(null);
+const addressProofFile = ref(null);
+
+// 2. Função para converter arquivo em base64
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    if (!file) return resolve('');
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+// 3. Handlers para cada input de arquivo
+async function handleOperatingLicenseChange(event) {
+  const file = event.target.files[0];
+  operatingLicenseFile.value = file;
+  if (file && file.type === 'application/pdf') {
+    form.value.operatingLicense = await fileToBase64(file);
+  } else {
+    form.value.operatingLicense = '';
+  }
+}
+async function handleRegistrationDocumentChange(event) {
+  const file = event.target.files[0];
+  registrationDocumentFile.value = file;
+  if (file && file.type === 'application/pdf') {
+    form.value.registrationDocument = await fileToBase64(file);
+  } else {
+    form.value.registrationDocument = '';
+  }
+}
+async function handleAddressProofChange(event) {
+  const file = event.target.files[0];
+  addressProofFile.value = file;
+  if (file && file.type === 'application/pdf') {
+    form.value.addressProof = await fileToBase64(file);
+  } else {
+    form.value.addressProof = '';
+  }
+}
+
+function submit() {
+  isLoading.value = true;
+  const payload = {
+    companyData: { ...form.value },
+    addressData: { ...endereco.value },
+    responsibleData: { ...rep.value }
+  };
+  CompanyService.create(payload)
+    .then(() => {
+      notification.notificationSuccess('Sucesso', 'Empresa criada com sucesso!');
+      router.push({ path: '/home' });
+    })
+    .catch((error) => {
+      notification.notificationError('Erro ao criar empresa', error.message);
+    })
+    .finally(() => {
+      isLoading.value = false;
+    });
 }
 
 const userOptions = ref([]);
 const fetchUsers = async () => {
   isLoading.value = true;
-  userService
-    .getAll()
+  UserService.getAll()
     .then((response) => {
       userOptions.value = response.data.map((user) => ({
         value: user.id,
@@ -362,7 +455,7 @@ const fetchUsers = async () => {
       }));
     })
     .catch((error) => {
-      useNotification().error('Erro ao buscar usuários', error.message);
+      notification.notificationError('Erro ao buscar usuários', error.message);
     })
     .finally(() => {
       isLoading.value = false;
@@ -383,7 +476,7 @@ const getAddressFromCep = async (cep) => {
   isLoading.value = true;
   const { data, error } = await getAddress(cep);
   if (error) {
-    useNotification().error('Erro ao buscar endereço', error.message);
+    notification.notificationError('Erro ao buscar endereço', error.message);
   } else if (data) {
     endereco.value.address = data.logradouro || '';
     endereco.value.neighborhood = data.bairro || '';
@@ -391,10 +484,58 @@ const getAddressFromCep = async (cep) => {
     endereco.value.state = data.uf || '';
     endereco.value.country = 'Brasil';
   } else {
-    useNotification().error('CEP não encontrado', 'Verifique o CEP informado.');
+    notification.notificationError('CEP não encontrado', 'Verifique o CEP informado.');
   }
   isLoading.value = false;
 };
 
-onMounted(fetchUsers);
+const isFormValid = computed(() => {
+  // Campos obrigatórios do form
+  const requiredFormFields = [
+    'companyName',
+    'cnpj',
+    'stateRegistration',
+    'municipalRegistration',
+    'corporateName',
+    'tradeName',
+    'phone',
+    'email',
+    'foundingDate',
+    'legalNature',
+    'businessActivity',
+    'operatingLicense',
+    'registrationDocument',
+    'addressProof',
+  ];
+  const formValid = requiredFormFields.every(
+    (key) => !!form.value[key] && (typeof form.value[key] === 'string' ? form.value[key].trim() !== '' : true)
+  );
+
+  // Campos obrigatórios do endereço
+  const requiredEnderecoFields = [
+    'cep',
+    'state',
+    'city',
+    'address',
+    'number',
+    'neighborhood',
+  ];
+  const enderecoValid = requiredEnderecoFields.every(
+    (key) => !!endereco.value[key] && (typeof endereco.value[key] === 'string' ? endereco.value[key].trim() !== '' : true)
+  );
+
+  // Campos obrigatórios do representante
+  let repValid = false;
+  if (rep.value.isNew) {
+    repValid = !!rep.value.name && !!rep.value.email && !!rep.value.cpf;
+  } else {
+    repValid = !!rep.value.userId;
+  }
+
+  return formValid && enderecoValid && repValid;
+});
+
+onMounted(async() => {
+  fetchUsers();
+});;
 </script>

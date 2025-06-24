@@ -1,15 +1,16 @@
 <template>
-  <div>
+  <div class="mt-4">
     <button
       :class="[
         sizeClasses[size],
         color,
-        'text-white cursor-pointer font-bold rounded transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center',
-        loading ? 'cursor-not-allowed pointer-events-none' : '',
+        'text-white font-bold rounded transition-transform active:scale-95 flex items-center justify-center',
+        (loading || disabled)
+          ? 'opacity-50 cursor-not-allowed'
+          : 'cursor-pointer hover:opacity-90',
         'min-w-[150px] h-[48px]',
       ]"
-      :disabled="loading"
-      @click="triggerError"
+      :disabled="loading || disabled"
       :type="type"
     >
       <div class="flex items-center justify-center gap-2">
@@ -33,13 +34,10 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
 import Spinner from './BaseSpinner.vue';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 
-const error = ref('');
-
-const props = defineProps({
+defineProps({
   buttonText: {
     type: String,
     required: true,
@@ -56,6 +54,10 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
+  disabled: {
+    type: Boolean,
+    default: false,
+  },
   inputValue: {
     type: String,
     default: '',
@@ -68,19 +70,15 @@ const props = defineProps({
     type: [String, Array],
     default: null,
   },
+  error: {
+    type: String,
+    default: '',
+  }
 });
 
 const sizeClasses = {
   sm: 'text-sm py-2 px-4',
   md: 'text-md py-3 px-6',
   lg: 'text-lg py-4 px-8',
-};
-
-const triggerError = () => {
-  if (!props.inputValue || props.inputValue.length === 0) {
-    error.value = 'Preencha o campo corretamente';
-  } else {
-    error.value = '';
-  }
 };
 </script>

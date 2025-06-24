@@ -1,6 +1,6 @@
 import http from '@/services/http';
 
-export default class ProfileService {
+export const UserService = {
   async getAll() {
     try {
       const response = await http.get('/users');
@@ -9,7 +9,7 @@ export default class ProfileService {
       console.error('Erro ao buscar usuários:', error);
       throw error;
     }
-  }
+  },
 
   async getById(id) {
     try {
@@ -19,7 +19,7 @@ export default class ProfileService {
       console.error('Erro ao buscar usuário por ID:', error);
       throw error;
     }
-  }
+  },
 
   async handleStatus(id) {
     try {
@@ -29,7 +29,7 @@ export default class ProfileService {
       console.error('Erro ao alterar status do usuário:', error);
       throw error;
     }
-  }
+  },
 
   async update(id, req) {
     try {
@@ -39,7 +39,7 @@ export default class ProfileService {
       console.error('Erro ao atualizar usuário:', error);
       throw error;
     }
-  }
+  },
 
   async delete(id) {
     try {
@@ -51,3 +51,5 @@ export default class ProfileService {
     }
   }
 }
+
+export default UserService;
