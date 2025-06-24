@@ -432,12 +432,15 @@ function submit() {
     responsibleData: { ...rep.value }
   };
   CompanyService.create(payload)
-    .then(() => {
-      notification.notificationSuccess('Sucesso', 'Empresa criada com sucesso!');
-      router.push({ path: '/home' });
+    .then((response) => {
+      setTimeout(() => {
+        notification.notificationSuccess('Sucesso!', response.data.message);
+        router.push({ path: '/home' });
+      },5000);
     })
     .catch((error) => {
-      notification.notificationError('Erro ao criar empresa', error.message);
+      console.log(error)
+      notification.notificationError('Erro ao criar empresa', error.data.message);
     })
     .finally(() => {
       isLoading.value = false;
@@ -449,7 +452,7 @@ const fetchUsers = async () => {
   isLoading.value = true;
   UserService.getAll()
     .then((response) => {
-      userOptions.value = response.data.map((user) => ({
+      userOptions.value = response.data.data.map((user) => ({
         value: user.id,
         label: `${user.nome} (${user.email})`,
       }));

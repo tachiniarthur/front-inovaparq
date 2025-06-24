@@ -93,15 +93,16 @@ import { ref, onMounted, onBeforeUnmount } from 'vue';
 import router from '@/router';
 import UserService from '@/services/internal/User/UserService';
 
-const service = new UserService();
+// const service = new UserService();
 const users = ref([]);
 const selectedIds = ref([]);
 const dropdownOpen = ref(null);
 const dropdownRefs = ref({});
 
 onMounted(() => {
-  service.getAll().then((response) => {
-    users.value = response.data;
+  UserService.getAll().then((response) => {
+    users.value = response.data.data;
+    console.log(users.value)
   });
 
   document.addEventListener('click', handleClickOutside);
@@ -143,8 +144,8 @@ function handleActions(action, id) {
 
 function handleStatus(id) {
   dropdownOpen.value = null;
-  service.handleStatus(id).then(() => {
-    service.getAll().then((response) => {
+  UserService.handleStatus(id).then(() => {
+    UserService.getAll().then((response) => {
       users.value = response.data;
     });
   });

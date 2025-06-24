@@ -104,7 +104,6 @@
               </div>
               <BaseButton
               :buttonText="'Entrar'"
-              :disabled="true"
               icon="arrow-right-to-bracket"
               :size="'lg'"
               :loading="isLoading"
