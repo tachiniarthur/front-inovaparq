@@ -57,7 +57,7 @@ export const CompanyService = {
       console.error('Erro ao atualizar kanban de empresas:', error);
       throw error;
     }
-  }
+  },
 
   async getCompanyById(id) {
     try {
@@ -67,7 +67,7 @@ export const CompanyService = {
       console.error('Erro ao obter empresa por ID:', error);
       throw error;
     }
-  }
+  },
 
   async updateStatus(id, status) {
     try {

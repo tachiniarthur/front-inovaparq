@@ -46,7 +46,8 @@ import { useNotification } from '@/composables/useNotification';
 import CompanyService from '@/services/internal/Company/CompanyService.js';
 
 const user = ref(localStorage.getItem('user'));
-const userParsed = JSON.parse(user.value).data;
+const userParsed = JSON.parse(user.value);
+
 
 const notification = useNotification();
 const companies = ref([]);
@@ -72,13 +73,13 @@ const steps = ref([
 
 const draggedCard = ref(null);
 
-function dragStart(companie) {
-  draggedCard.value = companie;
+function dragStart(companies) {
+  draggedCard.value = companies;
 }
 
 function onDrop(newStatus) {
   if (draggedCard.value) {
-    service
+    CompanyService
       .updateStatus(draggedCard.value.id, newStatus)
       .then(() => {
         const index = companies.value.findIndex((c) => c.id === draggedCard.value.id);

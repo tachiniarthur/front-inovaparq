@@ -251,35 +251,29 @@
       <div class="bg-white shadow-md rounded-lg w-full p-8 space-y-6">
         <h2 class="text-lg font-semibold mb-4 border-b pb-2">Documentos</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <!-- 4. Inputs de arquivo com @change -->
-          <BaseInput
-            v-model="form.operatingLicense"
+          <FileUpload
             label="Alvará de Funcionamento"
-            icon="fa-certificate"
-            placeholder="Insira o alvará de funcionamento"
-            required
-            type="file"
+            icon="fa fa-certificate"
+            placeholder="Selecione o arquivo"
             accept=".pdf,.jpg,.jpeg,.png"
-            @change="handleOperatingLicenseChange"
+            :required="true"
+            @update:file="file => handleFileChange('operatingLicense', file)"
           />
-          <BaseInput
-            v-model="form.registrationDocument"
+          <FileUpload
             label="Inscrição"
-            icon="fa-file-signature"
-            placeholder="Digite a inscrição"
-            required
-            type="file"
+            icon="fa fa-file-signature"
+            placeholder="Selecione o arquivo"
             accept=".pdf,.jpg,.jpeg,.png"
-            @change="handleRegistrationDocumentChange"
+            :required="true"
+            @update:file="file => handleFileChange('registrationDocument', file)"
           />
-          <BaseInput
-            v-model="form.addressProof"
+          <FileUpload
             label="Comprovante de Endereço"
-            icon="fa-file-invoice"
-            required
-            type="file"
+            icon="fa fa-file-invoice"
+            placeholder="Selecione o arquivo"
             accept=".pdf,.jpg,.jpeg,.png"
-            @change="handleAddressProofChange"
+            :required="true"
+            @update:file="file => handleFileChange('addressProof', file)"
           />
         </div>
       </div>
@@ -325,6 +319,7 @@ import BaseSelect from '@/components/BaseSelect.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import BaseSwitch from '@/components/BaseSwitch.vue';
 import { useRouter } from 'vue-router';
+import FileUpload from '@/components/FileUpload.vue';
 
 import { useViaCEP } from '@/services/external/ViaCepService.js';
 import UserService from '@/services/internal/User/UserService.js';
@@ -396,31 +391,15 @@ function fileToBase64(file) {
 }
 
 // 3. Handlers para cada input de arquivo
-async function handleOperatingLicenseChange(event) {
-  const file = event.target.files[0];
-  operatingLicenseFile.value = file;
-  if (file && file.type === 'application/pdf') {
-    form.value.operatingLicense = await fileToBase64(file);
-  } else {
-    form.value.operatingLicense = '';
+async function handleFileChange(type, file) {
+  if (!file) {
+    form.value[type] = '';
+    return;
   }
-}
-async function handleRegistrationDocumentChange(event) {
-  const file = event.target.files[0];
-  registrationDocumentFile.value = file;
-  if (file && file.type === 'application/pdf') {
-    form.value.registrationDocument = await fileToBase64(file);
+  if (file.type === 'application/pdf' || file.type.startsWith('image/')) {
+    form.value[type] = await fileToBase64(file);
   } else {
-    form.value.registrationDocument = '';
-  }
-}
-async function handleAddressProofChange(event) {
-  const file = event.target.files[0];
-  addressProofFile.value = file;
-  if (file && file.type === 'application/pdf') {
-    form.value.addressProof = await fileToBase64(file);
-  } else {
-    form.value.addressProof = '';
+    form.value[type] = '';
   }
 }
 
