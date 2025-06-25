@@ -8,6 +8,13 @@
 
     <div class="bg-white shadow-md rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Endereço</h2>
+      <p class="text-gray-700 mb-2"><strong>Cep:</strong> Nome Empresa</p>
+      <p class="text-gray-700 mb-2"><strong>Estado:</strong> Rua Exemplo, 123, Cidade, Estado</p>
+      <p class="text-gray-700 mb-2"><strong>Cidade:</strong> (11) 1234-5678</p>
+      <p class="text-gray-700 mb-2"><strong>Bairro:</strong> avt</p>
+      <p class="text-gray-700 mb-2"><strong>Logradouro:</strong> avts</p>
+      <p class="text-gray-700 mb-2"><strong>Número:</strong> 55</p>
+      <p class="text-gray-700 mb-2"><strong>Complemento:</strong> casa</p>
     </div>
   </div>
 </template>
@@ -18,12 +25,10 @@ import CompanyService from '@/services/internal/Company/CompanyService.js';
 import NavComponent from '@/components/NavComponent.vue';
 import { useRoute } from 'vue-router';
 
-const companyService = new CompanyService();
-
 const tabs = ref([
   { title: 'Informações Básicas', route: '/company-view/informacoes-basicas' },
   { title: 'Endereço', route: '/company-view/endereco' },
-  { title: 'Representantes Legais', route: '/company-view/representantes-legais' },
+  { title: 'Representante Legal', route: '/company-view/representantes-legais' },
   { title: 'Documentos', route: '/company-view/documentos' },
 ]);
 
