@@ -17,11 +17,11 @@
         <i :class="icon" class="mr-2"></i>
         {{ fileName || placeholder }}
       </button>
-      <span v-if="fileName" class="text-green-600 text-xs flex items-center gap-1">
+      <span v-if="fileName" class="text-secondary-600 text-xs flex items-center gap-1">
         <i class="fa fa-check-circle"></i> {{ fileName }}
         <button
           type="button"
-          class="ml-2 text-red-500 hover:text-red-700"
+          class="ml-2 text-red-500 hover:text-red-700 bg-transparent border-none p-0 cursor-pointer"
           @click="removeFile"
           title="Remover arquivo"
         >
@@ -34,9 +34,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 
-const props = defineProps({
+defineProps({
   label: String,
   placeholder: String,
   icon: String,
@@ -69,12 +69,3 @@ function removeFile() {
   emit('update:file', null);
 }
 </script>
-
-<style scoped>
-button[title="Remover arquivo"] {
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-}
-</style>

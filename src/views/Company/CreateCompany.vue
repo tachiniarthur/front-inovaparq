@@ -374,12 +374,6 @@ const rep = ref({
   role: '',
 });
 
-// 1. Criar refs para os arquivos
-const operatingLicenseFile = ref(null);
-const registrationDocumentFile = ref(null);
-const addressProofFile = ref(null);
-
-// 2. Função para converter arquivo em base64
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
     if (!file) return resolve('');
@@ -390,7 +384,6 @@ function fileToBase64(file) {
   });
 }
 
-// 3. Handlers para cada input de arquivo
 async function handleFileChange(type, file) {
   if (!file) {
     form.value[type] = '';
@@ -412,10 +405,8 @@ function submit() {
   };
   CompanyService.create(payload)
     .then((response) => {
-      setTimeout(() => {
-        notification.notificationSuccess('Sucesso!', response.data.message);
-        router.push({ path: '/home' });
-      },5000);
+      router.push({ path: '/home' });
+      localStorage.setItem('savedCompany', response.data.message)
     })
     .catch((error) => {
       console.log(error)
@@ -431,10 +422,12 @@ const fetchUsers = async () => {
   isLoading.value = true;
   UserService.getAll()
     .then((response) => {
-      userOptions.value = response.data.data.map((user) => ({
-        value: user.id,
-        label: `${user.nome} (${user.email})`,
-      }));
+      userOptions.value = response.data.data
+        .filter(user => !!user.cpf && user.cpf.trim() !== '')
+        .map((user) => ({
+          value: user.id,
+          label: `${user.nome} (${user.email})`,
+        }));
     })
     .catch((error) => {
       notification.notificationError('Erro ao buscar usuários', error.message);
@@ -472,7 +465,6 @@ const getAddressFromCep = async (cep) => {
 };
 
 const isFormValid = computed(() => {
-  // Campos obrigatórios do form
   const requiredFormFields = [
     'companyName',
     'cnpj',
@@ -493,7 +485,6 @@ const isFormValid = computed(() => {
     (key) => !!form.value[key] && (typeof form.value[key] === 'string' ? form.value[key].trim() !== '' : true)
   );
 
-  // Campos obrigatórios do endereço
   const requiredEnderecoFields = [
     'cep',
     'state',
@@ -506,7 +497,6 @@ const isFormValid = computed(() => {
     (key) => !!endereco.value[key] && (typeof endereco.value[key] === 'string' ? endereco.value[key].trim() !== '' : true)
   );
 
-  // Campos obrigatórios do representante
   let repValid = false;
   if (rep.value.isNew) {
     repValid = !!rep.value.name && !!rep.value.email && !!rep.value.cpf;
@@ -519,5 +509,5 @@ const isFormValid = computed(() => {
 
 onMounted(async() => {
   fetchUsers();
-});;
+});
 </script>

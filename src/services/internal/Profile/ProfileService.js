@@ -1,6 +1,6 @@
 import http from '@/services/http';
 
-export default class ProfileService {
+export const ProfileService = {
   async update(id, req) {
     try {
       const response = await http.put(`/users/${id}`, req);
@@ -9,7 +9,7 @@ export default class ProfileService {
       console.error('Erro ao fazer login:', error);
       throw error;
     }
-  }
+  },
 
   async delete(id, req) {
     try {
@@ -21,3 +21,5 @@ export default class ProfileService {
     }
   }
 }
+
+export default ProfileService;

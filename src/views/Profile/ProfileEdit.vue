@@ -4,23 +4,50 @@
       <div class="flex flex-col gap-4">
         <h2 class="text-xl font-bold">Informações Básicas</h2>
         <form class="space-y-2">
-          <BaseInput label="Nome" icon="lock" type="text" name="nome" id="nome" v-model="loginForm.nome" />
           <BaseInput
-            label="Username"
+            label="Nome"
+            icon="user"
+            type="text"
+            name="nome"
+            id="nome"
+            placeholder="Digite seu nome"
+            v-model="loginForm.nome" />
+          <BaseInput
+            label="Usuário"
             icon="id-card"
             type="text"
             name="username"
             id="username"
+            placeholder="Digite seu usuário"
             v-model="loginForm.username"
           />
-          <BaseInput label="CPF" icon="lock" type="text" name="cpf" id="cpf" v-model="loginForm.cpf" />
-          <BaseInput label="E-mail" icon="lock" type="text" name="email" id="email" v-model="loginForm.email" />
+          <BaseInput
+            label="CPF"
+            icon="fa-id-card"
+            type="text"
+            name="cpf"
+            id="cpf"
+            placeholder="Digite seu CPF"
+            v-mask="'###.###.###-##'"
+            v-model="loginForm.cpf"
+            />
+          <BaseInput
+            label="E-mail"
+            icon="fa-envelope"
+            type="text"
+            name="email"
+            id="email"
+            placeholder="Digite seu e-mail"
+            v-model="loginForm.email"
+            />
           <BaseInput
             label="Telefone"
-            icon="lock"
+            icon="fa-phone"
             type="text"
             name="telefone"
             id="telefone"
+            placeholder="Digite seu telefone"
+            v-mask="['(##) #####-####', '(##) ####-####']"
             v-model="loginForm.telefone"
           />
         </form>
@@ -42,62 +69,31 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
 import BaseButton from '@/components/BaseButton.vue';
 import BaseInput from '@/components/BaseInput.vue';
 import ProfileService from '@/services/internal/Profile/ProfileService.js';
 import router from '@/router';
+import { useNotification } from '@/composables/useNotification';
 
-const profileService = new ProfileService();
+const notification = useNotification();
 
 const isLoading = ref(false);
 const user = ref(localStorage.getItem('user'));
 const userParsed = JSON.parse(user.value);
 
-function formatCPF(value) {
-  let cpf = value.replace(/\D/g, '');
-  if (cpf.length <= 11) {
-    cpf = cpf
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d)/, '$1.$2')
-      .replace(/(\d{3})(\d{1,2})$/, '$1-$2');
-  }
-  return cpf;
-}
-
-function formatTelefone(value) {
-  let telefone = value.replace(/\D/g, '');
-  if (telefone.length <= 11) {
-    telefone = telefone.replace(/^(\d{2})(\d)/g, '($1) $2').replace(/(\d{4,5})(\d{4})$/, '$1-$2');
-  }
-  return telefone;
-}
-
 const loginForm = ref({
   nome: userParsed.nome || '',
   username: userParsed.username || '',
-  cpf: formatCPF(userParsed.cpf || ''),
+  cpf: userParsed.cpf || '',
   email: userParsed.email || '',
-  telefone: formatTelefone(userParsed.telefone || ''),
+  telefone: userParsed.telefone || '',
 });
 
-watch(
-  () => loginForm.value.cpf,
-  (newValue) => {
-    loginForm.value.cpf = formatCPF(newValue);
-  }
-);
-
-watch(
-  () => loginForm.value.telefone,
-  (newValue) => {
-    loginForm.value.telefone = formatTelefone(newValue);
-  }
-);
 
 function handleAccount(action) {
   if (action === 1) {
-    profileService
+    ProfileService
       .delete(userParsed.id, loginForm.value)
       .then((response) => {
         localStorage.removeItem('token', response.data.token);
@@ -109,13 +105,16 @@ function handleAccount(action) {
         isLoading.value = false;
       });
   } else if (action === 2) {
-    profileService
+    ProfileService
       .update(userParsed.id, loginForm.value)
       .then((response) => {
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data));
         alert('Perfil atualizado com sucesso!');
         router.push({ path: '/profile' });
+      })
+      .catch((error) => {
+        notification.notificationError('Erro', error.data.message);
       })
       .finally(() => {
         isLoading.value = false;

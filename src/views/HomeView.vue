@@ -24,15 +24,15 @@
 
         <div class="flex-1 space-y-3 min-h-0 overflow-y-auto hide-scrollbar">
           <router-link
-            :to="'/company-view/info/' + companie.id"
-            v-for="companie in companies.filter((c) => c.status === step.id)"
-            :key="companie.id"
+            :to="'/company-view/info/' + company.id"
+            v-for="company in companies.filter((c) => c.status === step.id)"
+            :key="company.id"
             class="bg-gray-100 p-3 rounded shadow cursor-pointer flex flex-col"
-            @dragstart="dragStart(companie)"
+            @dragstart="dragStart(company)"
             draggable="true"
           >
-            <span class="text-md">{{ companie.title }}</span>
-            <span class="text-xs">Responsável: {{ companie.resp }}</span>
+            <span class="text-md">{{ company.title }}</span>
+            <span class="text-xs">Responsável: {{ company.resp }}</span>
           </router-link>
         </div>
       </div>
@@ -53,6 +53,9 @@ const notification = useNotification();
 const companies = ref([]);
 
 onMounted(async () => {
+  if(localStorage.getItem("savedCompany")){
+    notification.notificationSuccess('Sucesso', localStorage.getItem("savedCompany"));
+  }
   try {
     const response = await CompanyService.getAll(userParsed.id);
     companies.value = response.data;
