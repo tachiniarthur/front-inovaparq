@@ -31,7 +31,7 @@ export const CompanyService = {
     }
   },
 
-  async update(req){
+  async update(req) {
     try {
       const response = await http.put('/companies', req);
       return response;
@@ -58,7 +58,6 @@ export const CompanyService = {
       throw error;
     }
   },
-
   async getCompanyById(id) {
     try {
       const response = await http.get(`/companies/${id}`);
@@ -68,7 +67,6 @@ export const CompanyService = {
       throw error;
     }
   },
-
   async updateStatus(id, status) {
     try {
       const response = await http.put(`/kanban-status/${id}`, { status });
@@ -77,7 +75,7 @@ export const CompanyService = {
       console.error('Erro ao atualizar status da empresa:', error);
       throw error;
     }
-  }
-}
+  },
+};
 
-export default CompanyService
+export default CompanyService;

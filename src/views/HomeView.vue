@@ -22,17 +22,17 @@
       >
         <h2 class="text-lg font-bold mb-4 text-center">{{ step.title }}</h2>
 
-        <div class="flex-1 space-y-3 min-h-0 overflow-y-auto hide-scrollbar">
+        <div v-if="companies" class="flex-1 space-y-3 min-h-0 overflow-y-auto hide-scrollbar">
           <router-link
-            :to="'/company-view/info/' + company.id"
-            v-for="company in companies.filter((c) => c.status === step.id)"
-            :key="company.id"
+            :to="'/company-view/informacoes-basicas/' + companie.id"
+            v-for="companie in companies.filter((c) => c.slugStatus === step.id)"
+            :key="companie.id"
             class="bg-gray-100 p-3 rounded shadow cursor-pointer flex flex-col"
             @dragstart="dragStart(company)"
             draggable="true"
           >
-            <span class="text-md">{{ company.title }}</span>
-            <span class="text-xs">Responsável: {{ company.resp }}</span>
+            <span class="text-md">{{ companie.nomeEmpresa }}</span>
+            <span class="text-xs">Responsável: {{ companie.nomeResponsavel }}</span>
           </router-link>
         </div>
       </div>
@@ -47,7 +47,6 @@ import CompanyService from '@/services/internal/Company/CompanyService.js';
 
 const user = ref(localStorage.getItem('user'));
 const userParsed = JSON.parse(user.value);
-
 
 const notification = useNotification();
 const companies = ref([]);
@@ -82,8 +81,7 @@ function dragStart(companies) {
 
 function onDrop(newStatus) {
   if (draggedCard.value) {
-    CompanyService
-      .updateStatus(draggedCard.value.id, newStatus)
+    CompanyService.updateStatus(draggedCard.value.id, newStatus)
       .then(() => {
         const index = companies.value.findIndex((c) => c.id === draggedCard.value.id);
         if (index !== -1) {
