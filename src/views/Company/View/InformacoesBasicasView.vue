@@ -22,17 +22,15 @@ import CompanyService from '@/services/internal/Company/CompanyService.js';
 import NavComponent from '@/components/NavComponent.vue';
 import { useRoute } from 'vue-router';
 
-const companyService = new CompanyService();
-
 const tabs = ref([
   { title: 'Informações Básicas', route: '/company-view/informacoes-basicas' },
   { title: 'Endereço', route: '/company-view/endereco' },
-  { title: 'Representantes Legais', route: '/company-view/representantes-legais' },
+  { title: 'Representante Legal', route: '/company-view/representantes-legais' },
   { title: 'Documentos', route: '/company-view/documentos' },
 ]);
 
 const companyId = ref(null);
-const company = ref([]);
+// const company = ref([]);
 
 onMounted(async () => {
   companyId.value = useRoute().params.id;
