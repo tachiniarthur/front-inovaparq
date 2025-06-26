@@ -92,6 +92,9 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import router from '@/router';
 import UserService from '@/services/internal/User/UserService';
+import { useNotification } from '@/composables/useNotification';
+
+const notification = useNotification();
 
 // const service = new UserService();
 const users = ref([]);
@@ -102,7 +105,6 @@ const dropdownRefs = ref({});
 onMounted(() => {
   UserService.getAll().then((response) => {
     users.value = response.data.data;
-    console.log(users.value)
   });
 
   document.addEventListener('click', handleClickOutside);
@@ -138,7 +140,17 @@ function handleActions(action, id) {
   if (action === 'editar') {
     router.push({ path: `/section-admin/users/edit/${id}` });
   } else if (action === 'excluir') {
-    alert(`Excluir usuário ${id}`);
+    UserService.delete(id)
+    .then((response) => {
+      notification.notificationSuccess("Sucesso", response.data.message);
+      UserService.getAll().then((response) => {
+        users.value = response.data.data;
+      });
+      })
+      .catch((error) => {
+        console.error('Erro ao excluir usuário:', error);
+        notification.notificationError(`Erro ao excluir usuário ${id}`);
+      });
   }
 }
 

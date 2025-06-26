@@ -63,7 +63,6 @@
                   :buttonText="'Criar'"
                   :size="'lg'"
                   :loading="isLoading"
-                  @click="handleRegister"
                   class="self-center"
                   type="submit"
                   :disabled="!isFormValid"
@@ -177,7 +176,6 @@ const errorRegister = ref("")
 
 const isLoading = ref(false);
 
-// Computed para validar os formulários
 const isFormValid = computed(() => {
   if (isRegisterMode.value) {
     return (
@@ -207,7 +205,6 @@ function handleLogin() {
       router.push({ path: '/home' });
     })
     .catch((error) => {
-      console.log(error)
       errorLogin.value = error.data
       notification.notificationError("Erro ao fazer login", error.data)
     })
@@ -219,15 +216,14 @@ function handleLogin() {
 function handleRegister() {
   AuthService.register(registerForm.value)
     .then((response) => {
-      notification.notificationSuccess('Sucesso', response.message.data);
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data));
+      notification.notificationSuccess('Sucesso', response.message);
+      localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.data));
       authStore.checkLogin();
       router.push({ path: '/home' });
     })
     .catch((error) => {
       errorRegister.value = error.data.message
-      console.error('Erro ao registrar usuário:', error);
       notification.notificationError('Erro ao registrar usuário', error.data.message);
     });
 }

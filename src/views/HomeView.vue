@@ -128,8 +128,7 @@ async function onDrop(newStatus, event) {
   companies.value[index].slugStatus = newStatus;
 
   try {
-    const response = await CompanyService.updateStatus(card.id, newStatus);
-    console.log(response)
+    await CompanyService.updateStatus(card.id, newStatus);
     notification.notificationSuccess('Sucesso', 'Status atualizado com sucesso!');
   } catch (error) {
     companies.value[index].slugStatus = card.slugStatus;

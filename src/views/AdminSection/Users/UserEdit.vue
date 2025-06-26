@@ -2,7 +2,7 @@
   <AppLoading :open="isLoading" />
   <div class="h-full bg-gray-100 flex flex-col p-6">
     <h1 class="text-2xl font-bold mb-6">Editar Usuário - {{ form.name }}</h1>
-    <form @submit.prevent="submitForm">
+    <form @submit.prevent="handleRegister">
       <div class="bg-white shadow-md rounded-lg w-full p-8 space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 mb-0 space-x-6">
           <BaseInput
@@ -14,9 +14,9 @@
           />
           <BaseInput
             v-model="form.username"
-            label="Username"
+            label="Nome de usuário"
             icon="fa-user-tie"
-            placeholder="Digite o username"
+            placeholder="Digite o nome de usuário"
             required
           />
           <BaseInput
@@ -68,44 +68,51 @@
             v-model="form.empresa_id"
             label="Vincular Empresa"
             icon="fa-building"
-            :options="[
-              { value: 'MEI', label: 'MEI' },
-              { value: 'ME', label: 'Microempresa (ME)' },
-              { value: 'EPP', label: 'Empresa de Pequeno Porte (EPP)' },
-              { value: 'LTDA', label: 'Sociedade Limitada (LTDA)' },
-              { value: 'SA', label: 'Sociedade Anônima (SA)' },
-              { value: 'EIRELI', label: 'Empresa Individual de Responsabilidade Limitada (EIRELI)' },
-            ]"
+            :options="companyOptions"
             required
           />
         </div>
-        <div class="flex justify-end mt-6">
-          <BaseButton
-            :buttonText="'Criar Usuário'"
+        <div class="flex justify-between w-full">
+          <router-link
+          to="/profile"
+          class="text-md py-3 px-6 bg-secondary-500 text-white cursor-pointer font-bold rounded transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center min-w-[150px] h-[48px]"
+          >
+          Cancelar
+        </router-link>
+        <div class="flex space-x-4">
+        <BaseButton
+            type="submit"
+            :buttonText="'Editar Usuário'"
             :size="'lg'"
             :loading="isLoading"
-            @click="handleRegister"
             class="self-center"
           />
         </div>
       </div>
-    </form>
-  </div>
+    </div>
+  </form>
+</div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRoute } from 'vue-router';
+import { ref, onMounted, computed } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import AppLoading from '@/components/AppLoading.vue';
 import BaseButton from '@/components/BaseButton.vue';
 import BaseInput from '@/components/BaseInput.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import PasswordValidation from '@/components/PasswordValidation.vue';
 import UserService from '@/services/internal/User/UserService';
+import CompanyService from '@/services/internal/Company/CompanyService';
+import { useNotification } from '@/composables/useNotification';
 
+const notification = useNotification();
 const route = useRoute();
+const router = useRouter();
 const isLoading = ref(false);
-const service = new UserService();
+const companies = ref([]);
+const user = ref(localStorage.getItem('user'));
+const userParsed = JSON.parse(user.value);
 
 const form = ref({
   name: '',
@@ -120,24 +127,31 @@ const form = ref({
   empresa_id: null,
 });
 
+const props = defineProps({
+  id: {
+    type: [String, Number],
+    required: false
+  }
+});
+
 const fetchUserById = async () => {
-  const id = route.params.id;
+  const id = props.id || route.params.id;
   if (!id) return;
 
   isLoading.value = true;
   try {
-    const response = await service.getById(id);
+    const response = await UserService.getById(id);
     const data = response.data;
 
-    form.value.name = data.nome || '';
-    form.value.username = data.username || '';
-    form.value.email = data.email || '';
-    form.value.cpf = data.cpf || '';
-    form.value.phone = data.telefone || '';
-    form.value.data_nascimento = data.data_nascimento || '';
-    form.value.cargo = data.cargo || '';
-    form.value.role = data.role || '';
-    form.value.empresa_id = data.empresa_id || null;
+    form.value.name = data.data.nome || '';
+    form.value.username = data.data.username || '';
+    form.value.email = data.data.email || '';
+    form.value.cpf = data.data.cpf || '';
+    form.value.phone = data.data.telefone || '';
+    form.value.data_nascimento = data.data.data_nascimento || '';
+    form.value.cargo = data.data.cargo || '';
+    form.value.role = data.data.role || '';
+    form.value.empresa_id = data.data.empresa_id || null;
   } catch (error) {
     console.error('Erro ao buscar usuário:', error);
   } finally {
@@ -145,7 +159,35 @@ const fetchUserById = async () => {
   }
 };
 
-onMounted(() => {
+const handleRegister = async () => {
+  isLoading.value = true;
+  try {
+    const response = await UserService.update(userParsed.id, form.value);
+    notification.notificationSuccess('Sucesso', response.data.message);
+    router.push({ path: '/section-admin/users' });
+  } catch (error) {
+    console.error('Erro ao registrar usuário:', error);
+    notification.notificationError('Erro ao registrar usuário', error.data.message);
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const companyOptions = computed(() =>
+  companies.value.map(company => ({
+    label: company.nomeEmpresa,
+    value: company.id
+  }))
+);
+
+onMounted(async() => {
   fetchUserById();
+   try {
+    const response = await CompanyService.getAll(userParsed.id);
+    companies.value = response.data.data;
+  } catch (error) {
+    console.error('Erro ao carregar empresas:', error);
+    notification.notificationError('Erro ao carregar empresas', error.data.message);
+  }
 });
 </script>

@@ -28,6 +28,10 @@
             <span class="text-gray-800">{{ userParsed.nome }}</span>
           </div>
           <div class="flex justify-between items-center">
+            <span class="font-medium text-gray-600">Nome de usuário:</span>
+            <span class="text-gray-800">{{ userParsed.username }}</span>
+          </div>
+          <div class="flex justify-between items-center">
             <span class="font-medium text-gray-600">E-mail:</span>
             <span class="text-gray-800">{{ userParsed.email }}</span>
           </div>
@@ -42,6 +46,10 @@
               />
             </template>
             <span v-else class="text-gray-800">Não cadastrado</span>
+          </div>
+           <div class="flex justify-between items-center">
+            <span class="font-medium text-gray-600">Data de nascimento:</span>
+            <span class="text-gray-800">{{ moment(userParsed.birthdate).format('DD/MM/YYYY') }}</span>
           </div>
         </div>
         <h2 class="text-xl font-bold">Configurações do Sistema</h2>
@@ -70,6 +78,7 @@
 
 <script setup>
 import { ref } from 'vue';
+import moment from 'moment';
 
 const user = ref(localStorage.getItem('user'));
 const userParsed = JSON.parse(user.value);

@@ -409,7 +409,6 @@ function submit() {
       localStorage.setItem('savedCompany', response.data.message);
     })
     .catch((error) => {
-      console.log(error);
       notification.notificationError('Erro ao criar empresa', error.data.message);
     })
     .finally(() => {
@@ -532,11 +531,6 @@ const isFormValid = computed(() => {
   } else {
     repValid = !!rep.value.userId && rep.value.userId !== '';
   }
-
-  // Descomente para depuração:
-  console.log('formValid', formValid, form.value);
-  console.log('enderecoValid', enderecoValid, endereco.value);
-  console.log('repValid', repValid, rep.value);
 
   return formValid && enderecoValid && repValid;
 });

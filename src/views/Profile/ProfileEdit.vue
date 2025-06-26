@@ -78,6 +78,16 @@
             v-mask="['(##) #####-####', '(##) ####-####']"
             v-model="loginForm.phone"
           />
+          <BaseInput
+            label="Data de Nascimento"
+            icon="fa-calendar"
+            type="text"
+            v-mask="'##/##/####'"
+            name="data_nascimento"
+            id="data_nascimento"
+            placeholder="Insira sua data de nascimento"
+            v-model="loginForm.data_nascimento"
+          />
         </form>
       </div>
     </div>
@@ -104,6 +114,7 @@ import ProfileService from '@/services/internal/Profile/ProfileService.js';
 import router from '@/router';
 import { useNotification } from '@/composables/useNotification';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import moment from 'moment';
 
 const notification = useNotification();
 
@@ -114,6 +125,8 @@ const isLoading = ref({
 const user = ref(localStorage.getItem('user'));
 const userParsed = JSON.parse(user.value);
 
+console.log(userParsed)
+
 const loginForm = ref({
   nome: userParsed.nome || '',
   username: userParsed.username || '',
@@ -121,6 +134,7 @@ const loginForm = ref({
   email: userParsed.email || '',
   phone: userParsed.telefone || '',
   foto: userParsed.foto || '',
+  data_nascimento: moment(userParsed.birthdate).format('DD/MM/YYYY') || '',
 });
 
 const avatarPreview = ref(userParsed.foto || null);
@@ -162,6 +176,9 @@ function handleAccount(action) {
   payload.cpf = payload.cpf.replace(/\D/g, '');
   payload.phone = payload.phone.replace(/\D/g, '');
   payload.photo = avatarPreview.value || userParsed.foto || '';
+  payload.birthdate = loginForm.value.data_nascimento;
+  payload.birthdate = moment(payload.birthdate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+  delete payload.data_nascimento;
   delete payload.foto;
 
   if (action === 1) {
@@ -174,7 +191,7 @@ function handleAccount(action) {
         router.push({ path: '/auth' });
       })
       .finally(() => {
-        isLoading.value = false;
+        isLoading.value.delete = false;
       });
   } else if (action === 2) {
     ProfileService
@@ -186,11 +203,10 @@ function handleAccount(action) {
         router.push({ path: '/profile' });
       })
       .catch((error) => {
-        console.log(error)
         notification.notificationError('Erro', error.data.message);
       })
       .finally(() => {
-        isLoading.value = false;
+        isLoading.value.edit = false;
       });
   }
 }

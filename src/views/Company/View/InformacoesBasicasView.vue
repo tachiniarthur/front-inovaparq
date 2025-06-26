@@ -37,7 +37,6 @@ onMounted(async () => {
   try {
     const response = await CompanyService.getCompanyById(companyId.value, 'informacoes-basicas');
     company.value = response.data;
-    console.log(company.value.mensagem);
   } catch (error) {
     console.error('Erro ao carregar os dados da empresa:', error);
   }

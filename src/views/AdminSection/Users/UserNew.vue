@@ -1,7 +1,7 @@
 <template>
   <AppLoading :open="isLoading" />
   <div class="h-full bg-gray-100 flex flex-col p-6">
-    <h1 class="text-2xl font-bold mb-6">Criar Nova Empresa</h1>
+    <h1 class="text-2xl font-bold mb-6">Criar Novo Usuário</h1>
     <form @submit.prevent="submitForm">
       <div class="bg-white shadow-md rounded-lg w-full p-8 space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 mb-0 space-x-6">
@@ -14,9 +14,9 @@
           />
           <BaseInput
             v-model="form.username"
-            label="Username"
+            label="Nome de usuário"
             icon="fa-user-tie"
-            placeholder="Digite o username"
+            placeholder="Digite o nome de usuário"
             required
           />
           <BaseInput
@@ -59,9 +59,9 @@
             type="password"
             name="confirmPassword"
             id="confirmPassword"
-            v-model="form.confirmPassword"
+            v-model="form.confirm_password"
           />
-          <PasswordValidation :password="form.password" :confirmPassword="form.confirmPassword" />
+          <PasswordValidation :password="form.password" :confirmPassword="form.confirm_password" />
         </div>
         <div class="mt-5">
           <BaseSelect
@@ -73,8 +73,14 @@
             required
           />
         </div>
-        <div class="flex justify-end mt-6">
-          <span v-if="!isFormValid">
+        <div class="flex justify-between items-center w-full mt-6">
+          <router-link
+            to="/section-admin/users"
+            class="text-md py-3 px-6 bg-secondary-500 text-white cursor-pointer font-bold rounded transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center min-w-[150px] h-[48px]"
+          >
+            Cancelar
+          </router-link>
+          <span v-if="!isFormValid" class="flex items-center">
             <BaseButton
               :buttonText="'Criar Usuário'"
               :size="'lg'"
@@ -116,6 +122,7 @@ import { useNotification } from '@/composables/useNotification';
 import CompanyService from '@/services/internal/Company/CompanyService.js';
 import AuthService from '@/services/internal/Auth/AuthService.js';
 import { useRouter } from 'vue-router';
+import moment from 'moment';
 
 const router = useRouter();
 
@@ -139,11 +146,11 @@ const form = ref({
   username: '',
   email: '',
   cpf: '',
-  telefone: '',
-  birthDate: '',
+  phone: '',
+  birthdate: '',
   role: '',
   password: '',
-  confirmPassword: '',
+  confirm_password: '',
   empresa_id: null,
 });
 
@@ -155,7 +162,7 @@ const isFormValid = computed(() => {
     form.value.email &&
     form.value.cpf &&
     form.value.password &&
-    form.value.confirmPassword &&
+    form.value.confirm_password &&
     form.value.empresa_id
   );
 });
@@ -164,10 +171,6 @@ onMounted(async () => {
   try {
     const response = await CompanyService.getAll(userParsed.id);
     companies.value = response.data.data;
-    console.log(companies.value)
-    if (!localStorage.getItem('savedCompany')) {
-      notification.notificationSuccess('Sucesso', 'Empresas carregadas com sucesso!');
-    }
   } catch (error) {
     console.error('Erro ao carregar empresas:', error);
     notification.notificationError('Erro ao carregar empresas', error.data.message);
@@ -175,10 +178,13 @@ onMounted(async () => {
 });
 
 function handleRegister() {
-  AuthService.register(form.value)
+  const payload = { ...form.value };
+  payload.cpf = payload.cpf.replace(/\D/g, '');
+  payload.phone = payload.phone.replace(/\D/g, '');
+  payload.birthdate = moment(payload.birthdate, 'DD/MM/YYYY').format('YYYY-MM-DD');
+  AuthService.register(payload)
     .then((response) => {
-      console.log('Usuário registrado com sucesso:', response);
-      notification.notificationSuccess('Sucesso', response.message);
+      notification.notificationSuccess('Sucesso', response.data.message);
       router.push({ path: '/section-admin/users' });
     })
     .catch((error) => {
