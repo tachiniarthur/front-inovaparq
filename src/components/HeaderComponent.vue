@@ -12,8 +12,13 @@
           @click="toggleDropdown"
           class="cursor-pointer flex space-x-2 items-center justify-center hover:bg-primary-200 py-2 px-4 rounded-lg duration-300"
         >
-          <div class="h-10 w-10 flex items-center justify-center bg-primary-600 rounded-full">
-            <font-awesome-icon :icon="['fas', 'user']" class="text-2xl" />
+          <div class="h-10 w-10 flex items-center justify-center bg-primary-600 rounded-full overflow-hidden">
+            <template v-if="props.user.foto">
+              <img :src="props.user.foto" alt="Avatar" class="object-cover h-10 w-10" />
+            </template>
+            <template v-else>
+              <font-awesome-icon :icon="['fas', 'user']" class="text-2xl text-white" />
+            </template>
           </div>
           <span class="text-lg font-medium">{{ props.user.nome }}</span>
           <font-awesome-icon :icon="['fas', 'chevron-down']" />

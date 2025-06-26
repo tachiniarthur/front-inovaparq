@@ -69,7 +69,7 @@ export const CompanyService = {
   },
   async updateStatus(id, status) {
     try {
-      const response = await http.put(`/kanban-status/${id}`, { status });
+      const response = await http.put(`/companies/kanban-status/${id}`, { status });
       return response;
     } catch (error) {
       console.error('Erro ao atualizar status da empresa:', error);

@@ -189,10 +189,8 @@
               v-model="rep.isNew"
               size="md"
               label="Cadastrar novo representante legal"
-              @change="rep.isNew = !rep.isNew"
             />
-            <!-- <input type="checkbox" v-model="rep.isNew" />
-            <span>Cadastrar novo representante legal</span> -->
+
           </label>
         </div>
         <template v-if="!rep.isNew">
@@ -291,10 +289,11 @@
             :loading="isLoading"
             :disabled="!isFormValid"
             @click="submit()"
-            v-tippy="{
+              v-tippy="{
               content: 'Preencha todos os campos obrigatórios para salvar',
               placement: 'top',
               arrow: true,
+              theme: 'custom'
             }"
           />
         </span>
@@ -313,7 +312,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import BaseInput from '@/components/BaseInput.vue';
 import BaseSelect from '@/components/BaseSelect.vue';
 import BaseButton from '@/components/BaseButton.vue';
@@ -333,6 +332,7 @@ const router = useRouter();
 const { getAddress } = useViaCEP();
 
 const isLoading = ref(false);
+const usersRaw = ref([]);
 
 const form = ref({
   companyName: '',
@@ -422,7 +422,9 @@ const fetchUsers = async () => {
   isLoading.value = true;
   UserService.getAll()
     .then((response) => {
-      userOptions.value = response.data.data
+      usersRaw.value = response.data.data;
+
+      userOptions.value = usersRaw.value
         .filter((user) => !!user.cpf && user.cpf.trim() !== '')
         .map((user) => ({
           value: user.id,
@@ -436,6 +438,7 @@ const fetchUsers = async () => {
       isLoading.value = false;
     });
 };
+
 
 const getAddressFromCep = async (cep) => {
   if (cep.length === 0) {
@@ -465,6 +468,7 @@ const getAddressFromCep = async (cep) => {
 };
 
 const isFormValid = computed(() => {
+  // Campos obrigatórios do formulário principal
   const requiredFormFields = [
     'companyName',
     'cnpj',
@@ -481,25 +485,96 @@ const isFormValid = computed(() => {
     'registrationDocument',
     'addressProof',
   ];
-  const formValid = requiredFormFields.every(
-    (key) => !!form.value[key] && (typeof form.value[key] === 'string' ? form.value[key].trim() !== '' : true)
-  );
 
-  const requiredEnderecoFields = ['cep', 'state', 'city', 'address', 'number', 'neighborhood'];
-  const enderecoValid = requiredEnderecoFields.every(
-    (key) =>
-      !!endereco.value[key] && (typeof endereco.value[key] === 'string' ? endereco.value[key].trim() !== '' : true)
-  );
+  // Validação dos campos do formulário principal
+  const formValid = requiredFormFields.every((key) => {
+    const value = form.value[key];
+    // Para arquivos, pode ser base64 (string) ou objeto File
+    if (
+      ['operatingLicense', 'registrationDocument', 'addressProof'].includes(key)
+    ) {
+      return typeof value === 'string' && value.trim() !== '';
+    }
+    // Para outros campos, string não vazia
+    return !!value && (typeof value === 'string' ? value.trim() !== '' : true);
+  });
 
+  // Campos obrigatórios do endereço
+  const requiredEnderecoFields = [
+    'cep',
+    'state',
+    'city',
+    'address',
+    'number',
+    'neighborhood',
+  ];
+
+  // Validação dos campos do endereço
+  const enderecoValid = requiredEnderecoFields.every((key) => {
+    const value = endereco.value[key];
+    // Permitir número como string ou número, mas não vazio
+    if (key === 'number') {
+      return value !== undefined && value !== null && String(value).trim() !== '';
+    }
+    return !!value && (typeof value === 'string' ? value.trim() !== '' : true);
+  });
+
+  // Validação do representante legal
   let repValid = false;
   if (rep.value.isNew) {
-    repValid = !!rep.value.name && !!rep.value.email && !!rep.value.cpf;
+    repValid =
+      !!rep.value.name &&
+      rep.value.name.trim() !== '' &&
+      !!rep.value.email &&
+      rep.value.email.trim() !== '' &&
+      !!rep.value.cpf &&
+      rep.value.cpf.trim() !== '';
   } else {
-    repValid = !!rep.value.userId;
+    repValid = !!rep.value.userId && rep.value.userId !== '';
   }
+
+  // Descomente para depuração:
+  console.log('formValid', formValid, form.value);
+  console.log('enderecoValid', enderecoValid, endereco.value);
+  console.log('repValid', repValid, rep.value);
 
   return formValid && enderecoValid && repValid;
 });
+
+watch(
+  () => rep.value.isNew,
+  (isNew) => {
+    rep.value = {
+      isNew,
+      userId: '',
+      name: '',
+      email: '',
+      cpf: '',
+      phone: '',
+      birthDate: '',
+      role: '',
+    };
+  }
+);
+
+watch(
+  () => rep.value.userId,
+  (newUserId) => {
+    if (!rep.value.isNew && newUserId) {
+      const fullUser = usersRaw.value.find((u) => u.id === Number(newUserId));
+      if (fullUser) {
+        rep.value.name = fullUser.nome || '';
+        rep.value.email = fullUser.email || '';
+        rep.value.cpf = fullUser.cpf || '';
+        rep.value.phone = fullUser.telefone || '';
+        rep.value.birthDate = '';
+        rep.value.role = '';
+      }
+    }
+  }
+);
+
+
 
 onMounted(async () => {
   fetchUsers();

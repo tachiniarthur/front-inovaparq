@@ -2,8 +2,17 @@
   <div class="h-full bg-gray-100 flex flex-col items-center p-6 space-y-6">
     <div class="bg-white shadow-md rounded-lg w-full p-6">
       <div class="flex items-center space-x-4 mb-6">
-        <div class="h-24 w-24 rounded-full bg-gray-300 flex items-center justify-center">
-          <font-awesome-icon :icon="['fas', 'user']" class="text-4xl text-gray-500" />
+        <div class="h-24 w-24 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden">
+          <template v-if="userParsed.foto && userParsed.foto !== ''">
+            <img
+              :src="userParsed.foto"
+              alt="Foto do usuário"
+              class="h-24 w-24 object-cover rounded-full"
+            />
+          </template>
+          <template v-else>
+            <font-awesome-icon :icon="['fas', 'user']" class="text-4xl text-gray-500" />
+          </template>
         </div>
         <div>
           <h1 class="text-2xl font-bold">{{ userParsed.nome }}</h1>
@@ -24,7 +33,15 @@
           </div>
           <div class="flex justify-between items-center">
             <span class="font-medium text-gray-600">Telefone:</span>
-            <span class="text-gray-800">{{ userParsed.telefone }}</span>
+            <template v-if="userParsed.telefone && userParsed.telefone !== 'Não cadastrado'">
+              <input
+                class="text-gray-800 bg-transparent border-none outline-none p-0 m-0 text-right w-auto"
+                readonly
+                v-mask="'(##) #####-####'"
+                :value="userParsed.telefone"
+              />
+            </template>
+            <span v-else class="text-gray-800">Não cadastrado</span>
           </div>
         </div>
         <h2 class="text-xl font-bold">Configurações do Sistema</h2>
@@ -56,13 +73,4 @@ import { ref } from 'vue';
 
 const user = ref(localStorage.getItem('user'));
 const userParsed = JSON.parse(user.value);
-
-function formatPhoneNumber(phone) {
-  if (!phone) return '';
-  const cleaned = phone.replace(/\D/g, '');
-  const match = cleaned.match(/^(\d{2})(\d{5})(\d{4})$/);
-  return match ? `(${match[1]}) ${match[2]}-${match[3]}` : phone;
-}
-
-userParsed.telefone = formatPhoneNumber(userParsed.telefone);
 </script>
