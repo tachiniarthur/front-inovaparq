@@ -8,10 +8,10 @@
 
     <div class="bg-white shadow-md rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Representante Legal</h2>
-      <p class="text-gray-700 mb-2"><strong>Nome:</strong> Nome Empresa</p>
-      <p class="text-gray-700 mb-2"><strong>Cpf:</strong> Rua Exemplo, 123, Cidade, Estado</p>
-      <p class="text-gray-700 mb-2"><strong>E-mail:</strong> (11) 1234-5678</p>
-      <p class="text-gray-700 mb-2"><strong>Telefone:</strong> avt</p>
+      <p class="text-gray-700 mb-2"><strong>Nome:</strong> {{ company.nome }}</p>
+      <p class="text-gray-700 mb-2"><strong>Cpf:</strong> {{ company.cpf }}</p>
+      <p class="text-gray-700 mb-2"><strong>E-mail:</strong> {{ company.email }}</p>
+      <p class="text-gray-700 mb-2"><strong>Telefone:</strong> {{ company.telefone }}</p>
     </div>
   </div>
 </template>
@@ -34,11 +34,11 @@ const company = ref([]);
 
 onMounted(async () => {
   companyId.value = useRoute().params.id;
-  // try {
-  //   const response = await companyService.getCompanyById(companyId.value);
-  //   company.value = response.data;
-  // } catch (error) {
-  //   console.error('Erro ao carregar os dados da empresa:', error);
-  // }
+  try {
+    const response = await CompanyService.getCompanyById(companyId.value, 'representante-legal');
+    company.value = response.data.data;
+  } catch (error) {
+    console.error('Erro ao carregar os dados da empresa:', error);
+  }
 });
 </script>

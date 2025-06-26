@@ -8,10 +8,11 @@
 
     <div class="bg-white shadow-md rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Informações da Empresa</h2>
-      <p class="text-gray-700 mb-2"><strong>Nome:</strong> Nome Empresa</p>
-      <p class="text-gray-700 mb-2"><strong>Endereço:</strong> Rua Exemplo, 123, Cidade, Estado</p>
-      <p class="text-gray-700 mb-2"><strong>Telefone:</strong> (11) 1234-5678</p>
-      <p class="text-gray-700 mb-2"><strong>Email:</strong></p>
+      <p class="text-gray-700 mb-2"><strong>Nome:</strong> {{ company.name }}</p>
+      <p class="text-gray-700 mb-2"><strong>CNPJ:</strong> {{ company.cnpj }}</p>
+      <p class="text-gray-700 mb-2"><strong>Email:</strong> {{ company.email }}</p>
+      <p class="text-gray-700 mb-2"><strong>Telefone:</strong> {{ company.telefone }}</p>
+      <p class="text-gray-700 mb-2"><strong>Site:</strong> {{ company.site }}</p>
     </div>
   </div>
 </template>
@@ -36,8 +37,7 @@ onMounted(async () => {
   companyId.value = useRoute().params.id;
   try {
     const response = await CompanyService.getCompanyById(companyId.value, 'informacoes-basicas');
-    company.value = response.data;
-    console.log(company.value.mensagem);
+    company.value = response.data.data;
   } catch (error) {
     console.error('Erro ao carregar os dados da empresa:', error);
   }

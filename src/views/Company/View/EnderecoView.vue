@@ -8,13 +8,12 @@
 
     <div class="bg-white shadow-md rounded-lg p-6 mb-6">
       <h2 class="text-xl font-semibold mb-4">Endereço</h2>
-      <p class="text-gray-700 mb-2"><strong>Cep:</strong> Nome Empresa</p>
-      <p class="text-gray-700 mb-2"><strong>Estado:</strong> Rua Exemplo, 123, Cidade, Estado</p>
-      <p class="text-gray-700 mb-2"><strong>Cidade:</strong> (11) 1234-5678</p>
-      <p class="text-gray-700 mb-2"><strong>Bairro:</strong> avt</p>
-      <p class="text-gray-700 mb-2"><strong>Logradouro:</strong> avts</p>
-      <p class="text-gray-700 mb-2"><strong>Número:</strong> 55</p>
-      <p class="text-gray-700 mb-2"><strong>Complemento:</strong> casa</p>
+      <p class="text-gray-700 mb-2"><strong>Cep:</strong> {{ company.cep }}</p>
+      <p class="text-gray-700 mb-2"><strong>Cidade:</strong> {{ company.cidade }}</p>
+      <p class="text-gray-700 mb-2"><strong>Bairro:</strong> {{ company.bairro }}</p>
+      <p class="text-gray-700 mb-2"><strong>Logradouro:</strong> {{ company.logradouro }}</p>
+      <p class="text-gray-700 mb-2"><strong>Número:</strong> {{ company.numero }}</p>
+      <p class="text-gray-700 mb-2"><strong>Complemento:</strong> {{ company.complemento }}</p>
     </div>
   </div>
 </template>
@@ -37,11 +36,11 @@ const company = ref([]);
 
 onMounted(async () => {
   companyId.value = useRoute().params.id;
-  // try {
-  //   const response = await companyService.getCompanyById(companyId.value);
-  //   company.value = response.data;
-  // } catch (error) {
-  //   console.error('Erro ao carregar os dados da empresa:', error);
-  // }
+  try {
+    const response = await CompanyService.getCompanyById(companyId.value, 'endereco');
+    company.value = response.data.data;
+  } catch (error) {
+    console.error('Erro ao carregar os dados da empresa:', error);
+  }
 });
 </script>
