@@ -1,14 +1,8 @@
 <template>
   <div>
     <label class="block text-sm font-medium mb-1">{{ label }}</label>
-    <div class="flex items-center gap-3">
-      <input
-        ref="fileInput"
-        type="file"
-        :accept="accept"
-        class="hidden"
-        @change="onFileChange"
-      />
+    <div class="flex flex-col items-start gap-3">
+      <input ref="fileInput" type="file" :accept="accept" class="hidden" @change="onFileChange" />
       <button
         type="button"
         class="px-4 py-2 bg-primary-600 text-white rounded hover:bg-primary-700 transition"

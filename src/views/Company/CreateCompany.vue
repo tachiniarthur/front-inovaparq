@@ -183,7 +183,7 @@
       </div>
       <div class="bg-white shadow-md rounded-lg w-full p-8 space-y-6">
         <h2 class="text-lg font-semibold pb-2">Representantes Legais</h2>
-         <div class="flex items-center gap-4 mb-4">
+        <div class="flex items-center gap-4 mb-4">
           <label class="flex items-center gap-2">
             <BaseSwitch
               v-model="rep.isNew"
@@ -257,7 +257,7 @@
             placeholder="Selecione o arquivo"
             accept=".pdf,.jpg,.jpeg,.png"
             :required="true"
-            @update:file="file => handleFileChange('operatingLicense', file)"
+            @update:file="(file) => handleFileChange('operatingLicense', file)"
           />
           <FileUpload
             label="Inscrição"
@@ -265,7 +265,7 @@
             placeholder="Selecione o arquivo"
             accept=".pdf,.jpg,.jpeg,.png"
             :required="true"
-            @update:file="file => handleFileChange('registrationDocument', file)"
+            @update:file="(file) => handleFileChange('registrationDocument', file)"
           />
           <FileUpload
             label="Comprovante de Endereço"
@@ -273,7 +273,7 @@
             placeholder="Selecione o arquivo"
             accept=".pdf,.jpg,.jpeg,.png"
             :required="true"
-            @update:file="file => handleFileChange('addressProof', file)"
+            @update:file="(file) => handleFileChange('addressProof', file)"
           />
         </div>
       </div>
@@ -294,7 +294,7 @@
             v-tippy="{
               content: 'Preencha todos os campos obrigatórios para salvar',
               placement: 'top',
-              arrow: true
+              arrow: true,
             }"
           />
         </span>
@@ -401,15 +401,15 @@ function submit() {
   const payload = {
     companyData: { ...form.value },
     addressData: { ...endereco.value },
-    responsibleData: { ...rep.value }
+    responsibleData: { ...rep.value },
   };
   CompanyService.create(payload)
     .then((response) => {
       router.push({ path: '/home' });
-      localStorage.setItem('savedCompany', response.data.message)
+      localStorage.setItem('savedCompany', response.data.message);
     })
     .catch((error) => {
-      console.log(error)
+      console.log(error);
       notification.notificationError('Erro ao criar empresa', error.data.message);
     })
     .finally(() => {
@@ -423,7 +423,7 @@ const fetchUsers = async () => {
   UserService.getAll()
     .then((response) => {
       userOptions.value = response.data.data
-        .filter(user => !!user.cpf && user.cpf.trim() !== '')
+        .filter((user) => !!user.cpf && user.cpf.trim() !== '')
         .map((user) => ({
           value: user.id,
           label: `${user.nome} (${user.email})`,
@@ -485,16 +485,10 @@ const isFormValid = computed(() => {
     (key) => !!form.value[key] && (typeof form.value[key] === 'string' ? form.value[key].trim() !== '' : true)
   );
 
-  const requiredEnderecoFields = [
-    'cep',
-    'state',
-    'city',
-    'address',
-    'number',
-    'neighborhood',
-  ];
+  const requiredEnderecoFields = ['cep', 'state', 'city', 'address', 'number', 'neighborhood'];
   const enderecoValid = requiredEnderecoFields.every(
-    (key) => !!endereco.value[key] && (typeof endereco.value[key] === 'string' ? endereco.value[key].trim() !== '' : true)
+    (key) =>
+      !!endereco.value[key] && (typeof endereco.value[key] === 'string' ? endereco.value[key].trim() !== '' : true)
   );
 
   let repValid = false;
@@ -507,7 +501,7 @@ const isFormValid = computed(() => {
   return formValid && enderecoValid && repValid;
 });
 
-onMounted(async() => {
+onMounted(async () => {
   fetchUsers();
 });
 </script>

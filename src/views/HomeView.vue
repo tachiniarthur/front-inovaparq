@@ -5,34 +5,33 @@
         <h1 class="text-3xl font-medium">Início</h1>
         <router-link
           :to="{ path: '/create-company' }"
-          class="cursor-pointer flex items-center justify-center gap-2 font-medium bg-primary-400 hover:bg-primary-200 px-3 rounded-lg duration-300"
+          class="text-md py-3 px-6 bg-primary-500 text-white cursor-pointer font-bold rounded transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center min-w-[150px] h-[48px] gap-x-2"
         >
           Nova Empresa
           <font-awesome-icon :icon="['fas', 'plus']" class="text-2xl font-medium" />
         </router-link>
       </div>
     </div>
-    <div class="p-4 flex gap-4 h-full overflow-x-auto">
+    <div class="p-6 flex gap-6 h-full overflow-x-auto">
       <div
         v-for="step in steps"
         :key="step.id"
-        class="bg-primary-400 p-4 rounded flex-shrink-0 flex flex-col w-80"
+        class="bg-primary-400 p-5 rounded-2xl flex-shrink-0 flex flex-col w-100 shadow-lg hover:shadow-xl transition-shadow duration-300"
         @drop="onDrop(step.id)"
         @dragover.prevent
       >
-        <h2 class="text-lg font-bold mb-4 text-center">{{ step.title }}</h2>
-
-        <div v-if="companies" class="flex-1 space-y-3 min-h-0 overflow-y-auto hide-scrollbar">
+        <h2 class="text-xl font-semibold mb-4 text-white text-center tracking-wide">{{ step.title }}</h2>
+        <div v-if="companies" class="flex-1 space-y-4 overflow-y-auto hide-scrollbar min-h-0">
           <router-link
             :to="'/company-view/informacoes-basicas/' + companie.id"
             v-for="companie in companies.filter((c) => c.slugStatus === step.id)"
             :key="companie.id"
-            class="bg-gray-100 p-3 rounded shadow cursor-pointer flex flex-col"
+            class="bg-white hover:bg-gray-100 transtion-all duration-200 p-4 rounded-xl shadow-sm cursor-pointer flex flex-col border border-gray-100"
             @dragstart="dragStart(company)"
             draggable="true"
           >
-            <span class="text-md">{{ companie.nomeEmpresa }}</span>
-            <span class="text-xs">Responsável: {{ companie.nomeResponsavel }}</span>
+            <span class="text-base font-medium text-gray-800">{{ companie.nomeEmpresa }}</span>
+            <span class="text-sm text-gray-500 mt-1">Responsável: {{ companie.nomeResponsavel }}</span>
           </router-link>
         </div>
       </div>
@@ -52,13 +51,16 @@ const notification = useNotification();
 const companies = ref([]);
 
 onMounted(async () => {
-  if(localStorage.getItem("savedCompany")){
-    notification.notificationSuccess('Sucesso', localStorage.getItem("savedCompany"));
+  if (localStorage.getItem('savedCompany')) {
+    notification.notificationSuccess('Sucesso', localStorage.getItem('savedCompany'));
+    localStorage.removeItem('savedCompany');
   }
   try {
     const response = await CompanyService.getAll(userParsed.id);
-    companies.value = response.data;
-    console.log('Empresas carregadas:', companies.value);
+    companies.value = response.data.data;
+    if (!localStorage.getItem('savedCompany')) {
+      notification.notificationSuccess('Sucesso', 'Empresas carregadas com sucesso!');
+    }
   } catch (error) {
     console.error('Erro ao carregar empresas:', error);
     notification.notificationError('Erro ao carregar empresas', error.data.message);

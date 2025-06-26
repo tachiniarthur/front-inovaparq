@@ -30,15 +30,16 @@ const tabs = ref([
 ]);
 
 const companyId = ref(null);
-// const company = ref([]);
+const company = ref([]);
 
 onMounted(async () => {
   companyId.value = useRoute().params.id;
-  // try {
-  //   const response = await companyService.getCompanyById(companyId.value);
-  //   company.value = response.data;
-  // } catch (error) {
-  //   console.error('Erro ao carregar os dados da empresa:', error);
-  // }
+  try {
+    const response = await CompanyService.getCompanyById(companyId.value, 'informacoes-basicas');
+    company.value = response.data;
+    console.log(company.value.mensagem);
+  } catch (error) {
+    console.error('Erro ao carregar os dados da empresa:', error);
+  }
 });
 </script>

@@ -10,7 +10,6 @@ export const CompanyService = {
       throw error;
     }
   },
-
   async getById(id) {
     try {
       const response = await http.get(`/companies/${id}`);
@@ -20,7 +19,6 @@ export const CompanyService = {
       throw error;
     }
   },
-
   async create(req) {
     try {
       const response = await http.post('/companies', req);
@@ -58,9 +56,11 @@ export const CompanyService = {
       throw error;
     }
   },
-  async getCompanyById(id) {
+  async getCompanyById(id, view) {
     try {
-      const response = await http.get(`/companies/${id}`);
+      const response = await http.get(`/companies/${id}`, {
+        params: { section: view },
+      });
       return response;
     } catch (error) {
       console.error('Erro ao obter empresa por ID:', error);
