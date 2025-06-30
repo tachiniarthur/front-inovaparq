@@ -165,10 +165,11 @@ function onAvatarChange(e) {
 }
 
 function handleAccount(action) {
-  if(action === 1) {
-    isLoading.value.edit = true;
-  } else {
+          // Corrigir: ativar o loading correto para cada ação
+  if (action === 1) {
     isLoading.value.delete = true;
+  } else {
+    isLoading.value.edit = true;
   }
   const payload = { ...loginForm.value };
   payload.name = payload.nome;
@@ -190,7 +191,11 @@ function handleAccount(action) {
         notification.notificationSuccess('Sucesso', response.data.message);
         router.push({ path: '/auth' });
       })
+      .catch((error) => {
+        notification.notificationError('Erro', error.data.message);
+      })
       .finally(() => {
+        // Corrigir: resetar o loading correto
         isLoading.value.delete = false;
       });
   } else if (action === 2) {
@@ -206,6 +211,7 @@ function handleAccount(action) {
         notification.notificationError('Erro', error.data.message);
       })
       .finally(() => {
+        // Corrigir: resetar o loading correto
         isLoading.value.edit = false;
       });
   }
