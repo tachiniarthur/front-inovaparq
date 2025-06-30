@@ -31,13 +31,13 @@ const tabs = ref([
 ]);
 
 const companyId = ref(null);
-const company = ref([]);
+const company = ref({});
 
 onMounted(async () => {
   companyId.value = useRoute().params.id;
   try {
     const response = await CompanyService.getCompanyById(companyId.value, 'informacoes-basicas');
-    company.value = response.data;
+    company.value = response.data.data;
   } catch (error) {
     console.error('Erro ao carregar os dados da empresa:', error);
   }

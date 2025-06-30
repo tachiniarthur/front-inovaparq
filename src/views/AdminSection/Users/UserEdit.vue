@@ -74,24 +74,24 @@
         </div>
         <div class="flex justify-between w-full">
           <router-link
-          to="/profile"
-          class="text-md py-3 px-6 bg-secondary-500 text-white cursor-pointer font-bold rounded transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center min-w-[150px] h-[48px]"
+            to="/profile"
+            class="text-md py-3 px-6 bg-secondary-500 text-white cursor-pointer font-bold rounded transition-transform active:scale-95 hover:opacity-90 flex items-center justify-center min-w-[150px] h-[48px]"
           >
-          Cancelar
-        </router-link>
-        <div class="flex space-x-4">
-        <BaseButton
-            type="submit"
-            :buttonText="'Editar Usuário'"
-            :size="'lg'"
-            :loading="isLoading"
-            class="self-center"
-          />
+            Cancelar
+          </router-link>
+          <div class="flex space-x-4">
+            <BaseButton
+              type="submit"
+              :buttonText="'Editar Usuário'"
+              :size="'lg'"
+              :loading="isLoading"
+              class="self-center"
+            />
+          </div>
         </div>
       </div>
-    </div>
-  </form>
-</div>
+    </form>
+  </div>
 </template>
 
 <script setup>
@@ -130,8 +130,8 @@ const form = ref({
 const props = defineProps({
   id: {
     type: [String, Number],
-    required: false
-  }
+    required: false,
+  },
 });
 
 const fetchUserById = async () => {
@@ -162,7 +162,9 @@ const fetchUserById = async () => {
 const handleRegister = async () => {
   isLoading.value = true;
   try {
-    const response = await UserService.update(userParsed.id, form.value);
+    const id = props.id || route.params.id;
+    console.log(form.value);
+    const response = await UserService.update(id, form.value);
     notification.notificationSuccess('Sucesso', response.data.message);
     router.push({ path: '/section-admin/users' });
   } catch (error) {
@@ -174,15 +176,15 @@ const handleRegister = async () => {
 };
 
 const companyOptions = computed(() =>
-  companies.value.map(company => ({
+  companies.value.map((company) => ({
     label: company.nomeEmpresa,
-    value: company.id
+    value: company.id,
   }))
 );
 
-onMounted(async() => {
+onMounted(async () => {
   fetchUserById();
-   try {
+  try {
     const response = await CompanyService.getAll(userParsed.id);
     companies.value = response.data.data;
   } catch (error) {

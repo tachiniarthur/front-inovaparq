@@ -141,11 +141,11 @@ function handleActions(action, id) {
     router.push({ path: `/section-admin/users/edit/${id}` });
   } else if (action === 'excluir') {
     UserService.delete(id)
-    .then((response) => {
-      notification.notificationSuccess("Sucesso", response.data.message);
-      UserService.getAll().then((response) => {
-        users.value = response.data.data;
-      });
+      .then((response) => {
+        notification.notificationSuccess('Sucesso', response.data.message);
+        UserService.getAll().then((response) => {
+          users.value = response.data.data;
+        });
       })
       .catch((error) => {
         console.error('Erro ao excluir usuário:', error);
@@ -158,7 +158,7 @@ function handleStatus(id) {
   dropdownOpen.value = null;
   UserService.handleStatus(id).then(() => {
     UserService.getAll().then((response) => {
-      users.value = response.data;
+      users.value = response.data.data;
     });
   });
 }

@@ -4,29 +4,25 @@
       <!-- Avatar Upload -->
       <div class="flex flex-col items-center mb-6">
         <label class="relative cursor-pointer group" for="avatar-upload">
-          <div class="h-24 w-24 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden border-2 border-gray-200 group-hover:border-primary-500 transition">
+          <div
+            class="h-24 w-24 rounded-full bg-gray-300 flex items-center justify-center overflow-hidden border-2 border-gray-200 group-hover:border-primary-500 transition"
+          >
             <template v-if="avatarPreview">
               <img :src="avatarPreview" alt="Avatar Preview" class="object-cover h-full w-full" />
             </template>
             <template v-else>
               <font-awesome-icon :icon="['fas', 'user']" class="text-4xl text-gray-500" />
             </template>
-            <div class="absolute inset-0 rounded-full bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition">
+            <div
+              class="absolute inset-0 rounded-full bg-black bg-opacity-20 opacity-0 group-hover:opacity-100 flex items-center justify-center transition"
+            >
               <font-awesome-icon :icon="['fas', 'camera']" class="text-xl text-white" />
             </div>
           </div>
-          <input
-          id="avatar-upload"
-          type="file"
-          accept="image/*"
-          class="hidden"
-          @change="onAvatarChange"
-          />
+          <input id="avatar-upload" type="file" accept="image/*" class="hidden" @change="onAvatarChange" />
         </label>
         <span class="text-sm text-gray-500 mt-2">Clique para alterar foto</span>
-        <span class="text-xs mt-1 font-semibold bg-primary-100 px-2 py-1 rounded">
-          Tamanho máximo de imagem: 5MB
-        </span>
+        <span class="text-xs mt-1 font-semibold bg-primary-100 px-2 py-1 rounded"> Tamanho máximo de imagem: 5MB </span>
       </div>
       <!-- ...restante do formulário... -->
       <div class="flex flex-col gap-4">
@@ -39,7 +35,8 @@
             name="nome"
             id="nome"
             placeholder="Digite seu nome"
-            v-model="loginForm.nome" />
+            v-model="loginForm.nome"
+          />
           <BaseInput
             label="Usuário"
             icon="id-card"
@@ -58,7 +55,7 @@
             placeholder="Digite seu CPF"
             v-mask="'###.###.###-##'"
             v-model="loginForm.cpf"
-            />
+          />
           <BaseInput
             label="E-mail"
             icon="fa-envelope"
@@ -67,7 +64,7 @@
             id="email"
             placeholder="Digite seu e-mail"
             v-model="loginForm.email"
-            />
+          />
           <BaseInput
             label="Telefone"
             icon="fa-phone"
@@ -100,7 +97,12 @@
       </router-link>
       <div class="flex space-x-4">
         <BaseButton :buttonText="'Excluir Conta'" :loading="isLoading.edit" @click="handleAccount(1)" />
-        <BaseButton :buttonText="'Salvar'" :color="'bg-tertiary-500'" :loading="isLoading.delete" @click="handleAccount(2)" />
+        <BaseButton
+          :buttonText="'Salvar'"
+          :color="'bg-tertiary-500'"
+          :loading="isLoading.delete"
+          @click="handleAccount(2)"
+        />
       </div>
     </div>
   </div>
@@ -124,8 +126,6 @@ const isLoading = ref({
 });
 const user = ref(localStorage.getItem('user'));
 const userParsed = JSON.parse(user.value);
-
-console.log(userParsed)
 
 const loginForm = ref({
   nome: userParsed.nome || '',
@@ -165,7 +165,7 @@ function onAvatarChange(e) {
 }
 
 function handleAccount(action) {
-          // Corrigir: ativar o loading correto para cada ação
+  // Corrigir: ativar o loading correto para cada ação
   if (action === 1) {
     isLoading.value.delete = true;
   } else {
@@ -183,8 +183,7 @@ function handleAccount(action) {
   delete payload.foto;
 
   if (action === 1) {
-    ProfileService
-      .delete(userParsed.id, payload)
+    ProfileService.delete(userParsed.id, payload)
       .then((response) => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -199,8 +198,7 @@ function handleAccount(action) {
         isLoading.value.delete = false;
       });
   } else if (action === 2) {
-    ProfileService
-      .update(userParsed.id, payload)
+    ProfileService.update(userParsed.id, payload)
       .then((response) => {
         localStorage.setItem('token', response.data.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.data));

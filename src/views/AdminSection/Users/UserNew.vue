@@ -63,7 +63,7 @@
           />
           <PasswordValidation :password="form.password" :confirmPassword="form.confirm_password" />
         </div>
-        <div class="mt-5">
+        <!-- <div class="mt-5">
           <BaseSelect
             class="text-black"
             v-model="form.empresa_id"
@@ -72,7 +72,7 @@
             :options="companyOptions"
             required
           />
-        </div>
+        </div> -->
         <div class="flex justify-between items-center w-full mt-6">
           <router-link
             to="/section-admin/users"
@@ -135,9 +135,9 @@ const userParsed = JSON.parse(user.value);
 const companies = ref([]);
 
 const companyOptions = computed(() =>
-  companies.value.map(company => ({
+  companies.value.map((company) => ({
     label: company.nomeEmpresa,
-    value: company.id
+    value: company.id,
   }))
 );
 
@@ -162,8 +162,7 @@ const isFormValid = computed(() => {
     form.value.email &&
     form.value.cpf &&
     form.value.password &&
-    form.value.confirm_password &&
-    form.value.empresa_id
+    form.value.confirm_password
   );
 });
 
