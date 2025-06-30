@@ -54,3 +54,15 @@
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+.tippy-box[data-theme~='custom'] {
+  background-color: #1e293b;
+  color: #fff;
+  border-radius: 8px;
+  font-size: 1rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+  padding: 8px 16px;
+}
+.tippy-box[data-theme~='custom'][data-placement^='top'] > .tippy-arrow {
+  color: #1e293b;
+}

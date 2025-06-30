@@ -10,6 +10,7 @@ export const CompanyService = {
       throw error;
     }
   },
+
   async getById(id) {
     try {
       const response = await http.get(`/companies/${id}`);
@@ -19,6 +20,7 @@ export const CompanyService = {
       throw error;
     }
   },
+
   async create(req) {
     try {
       const response = await http.post('/companies', req);
@@ -38,6 +40,7 @@ export const CompanyService = {
       throw error;
     }
   },
+
   async delete(id) {
     try {
       const response = await http.delete(`/companies/${id}`);
@@ -47,6 +50,7 @@ export const CompanyService = {
       throw error;
     }
   },
+
   async updateKanban(id, req) {
     try {
       const response = await http.put(`/companies/kanban-status/${id}?novoSlug=`, req);
@@ -56,6 +60,7 @@ export const CompanyService = {
       throw error;
     }
   },
+
   async getCompanyById(id, view) {
     try {
       const response = await http.get(`/companies/${id}`, {
@@ -67,9 +72,10 @@ export const CompanyService = {
       throw error;
     }
   },
+
   async updateStatus(id, status) {
     try {
-      const response = await http.put(`/kanban-status/${id}`, { status });
+      const response = await http.put(`/companies/kanban-status/${id}`, { status });
       return response;
     } catch (error) {
       console.error('Erro ao atualizar status da empresa:', error);

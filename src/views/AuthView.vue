@@ -63,9 +63,10 @@
                   :buttonText="'Criar'"
                   :size="'lg'"
                   :loading="isLoading"
-                  @click="handleRegister"
                   class="self-center"
                   type="submit"
+                  :disabled="!isFormValid"
+                  v-tippy="!isFormValid ? 'Preencha todos os campos obrigatórios e confirme a senha corretamente.' : ''"
                 />
               </div>
             </div>
@@ -109,6 +110,8 @@
               :loading="isLoading"
               type="submit"
               @click="handleLogin"
+              :disabled="!isFormValid"
+              v-tippy="!isFormValid ? 'Preencha usuário e senha para entrar.' : ''"
               />
             </div>
           </form>
@@ -143,7 +146,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/store/authStore.js';
 import BaseButton from '@/components/BaseButton.vue';
@@ -153,7 +156,6 @@ import AuthService from '@/services/internal/Auth/AuthService.js';
 import { useNotification } from '@/composables/useNotification';
 
 const router = useRouter();
-// const auth = new AuthService();
 const authStore = useAuthStore();
 const isRegisterMode = ref(false);
 const notification = useNotification();
@@ -174,6 +176,23 @@ const errorRegister = ref("")
 
 const isLoading = ref(false);
 
+const isFormValid = computed(() => {
+  if (isRegisterMode.value) {
+    return (
+      registerForm.value.name.trim() !== '' &&
+      registerForm.value.username.trim() !== '' &&
+      registerForm.value.password.trim() !== '' &&
+      registerForm.value.confirm_password.trim() !== '' &&
+      registerForm.value.password === registerForm.value.confirm_password
+    );
+  } else {
+    return (
+      loginForm.value.username.trim() !== '' &&
+      loginForm.value.password.trim() !== ''
+    );
+  }
+});
+
 function handleLogin() {
   isLoading.value = true;
 
@@ -186,9 +205,8 @@ function handleLogin() {
       router.push({ path: '/home' });
     })
     .catch((error) => {
-      errorLogin.value = error.response.data
-      console.error('Erro ao fazer login:', error);
-      notification.notificationError("Erro ao fazer login", String(error.response.data))
+      errorLogin.value = error.data
+      notification.notificationError("Erro ao fazer login", error.data)
     })
     .finally(() => {
       isLoading.value = false;
@@ -198,16 +216,14 @@ function handleLogin() {
 function handleRegister() {
   AuthService.register(registerForm.value)
     .then((response) => {
-      console.log('Usuário registrado com sucesso:', response);
       notification.notificationSuccess('Sucesso', response.message);
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('user', JSON.stringify(response.data));
+      localStorage.setItem('token', response.data.data.token);
+      localStorage.setItem('user', JSON.stringify(response.data.data));
       authStore.checkLogin();
       router.push({ path: '/home' });
     })
     .catch((error) => {
       errorRegister.value = error.data.message
-      console.error('Erro ao registrar usuário:', error);
       notification.notificationError('Erro ao registrar usuário', error.data.message);
     });
 }

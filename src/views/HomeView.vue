@@ -16,9 +16,14 @@
       <div
         v-for="step in steps"
         :key="step.id"
-        class="bg-primary-400 p-5 rounded-2xl flex-shrink-0 flex flex-col w-100 shadow-lg hover:shadow-xl transition-shadow duration-300"
-        @drop="onDrop(step.id)"
-        @dragover.prevent
+        :class="[
+          'p-5 rounded-2xl flex-shrink-0 flex flex-col w-100 shadow-lg transition-shadow duration-300 min-w-[320px]',
+          'bg-primary-400',
+          dragOverStep === step.id ? 'ring-4 ring-primary-700 bg-primary-500/90 scale-[1.02]' : ''
+        ]"
+        @drop="onDrop(step.id, $event)"
+        @dragover.prevent="onDragOver(step.id)"
+        @dragleave="onDragLeave"
       >
         <h2 class="text-xl font-semibold mb-4 text-white text-center tracking-wide">{{ step.title }}</h2>
         <div v-if="companies" class="flex-1 space-y-4 overflow-y-auto hide-scrollbar min-h-0">
@@ -26,9 +31,17 @@
             :to="'/company-view/informacoes-basicas/' + companie.id"
             v-for="companie in companies.filter((c) => c.slugStatus === step.id)"
             :key="companie.id"
-            class="bg-white hover:bg-gray-100 transtion-all duration-200 p-4 rounded-xl shadow-sm cursor-pointer flex flex-col border border-gray-100"
-            @dragstart="dragStart(company)"
-            draggable="true"
+            :draggable="true"
+            @dragstart="dragStart(companie)"
+            @dragend="dragEnd"
+            :class="[
+              'transition-all duration-200 p-4 rounded-xl shadow-sm cursor-pointer flex flex-col border border-gray-100 bg-white hover:bg-gray-100',
+              draggedCard && draggedCard.id === companie.id
+                ? 'opacity-60 scale-95 shadow-2xl z-30 ring-2 ring-primary-400'
+                : 'opacity-100 scale-100',
+              'select-none'
+            ]"
+            style="user-select: none;"
           >
             <span class="text-base font-medium text-gray-800">{{ companie.nomeEmpresa }}</span>
             <span class="text-sm text-gray-500 mt-1">Responsável: {{ companie.nomeResponsavel }}</span>
@@ -53,18 +66,18 @@ const companies = ref([]);
 onMounted(async () => {
   if (localStorage.getItem('savedCompany')) {
     notification.notificationSuccess('Sucesso', localStorage.getItem('savedCompany'));
-    localStorage.removeItem('savedCompany');
   }
   try {
     const response = await CompanyService.getAll(userParsed.id);
     companies.value = response.data.data;
     if (!localStorage.getItem('savedCompany')) {
-      notification.notificationSuccess('Sucesso', 'Empresas carregadas com sucesso!');
+      notification.notificationSuccess('Sucesso', response.data.message);
     }
   } catch (error) {
     console.error('Erro ao carregar empresas:', error);
     notification.notificationError('Erro ao carregar empresas', error.data.message);
   }
+  localStorage.removeItem('savedCompany');
 });
 
 const steps = ref([
@@ -76,24 +89,66 @@ const steps = ref([
 ]);
 
 const draggedCard = ref(null);
+const dragOverStep = ref(null);
 
-function dragStart(companies) {
-  draggedCard.value = companies;
+function dragStart(companie) {
+  draggedCard.value = companie;
 }
 
-function onDrop(newStatus) {
-  if (draggedCard.value) {
-    CompanyService.updateStatus(draggedCard.value.id, newStatus)
-      .then(() => {
-        const index = companies.value.findIndex((c) => c.id === draggedCard.value.id);
-        if (index !== -1) {
-          companies.value[index].status = newStatus;
-        }
-        draggedCard.value = null;
-      })
-      .catch((error) => {
-        console.error('Erro ao atualizar status:', error);
-      });
+function dragEnd() {
+  draggedCard.value = null;
+  dragOverStep.value = null;
+}
+
+function onDragOver(stepId) {
+  dragOverStep.value = stepId;
+}
+
+function onDragLeave() {
+  dragOverStep.value = null;
+}
+
+async function onDrop(newStatus, event) {
+  if (event) event.preventDefault();
+
+  if (!draggedCard.value || !draggedCard.value.id) {
+    dragOverStep.value = null;
+    return;
+  }
+
+  const card = { ...draggedCard.value };
+  const index = companies.value.findIndex((c) => c.id === card.id);
+
+  if (index === -1 || card.slugStatus === newStatus) {
+    draggedCard.value = null;
+    dragOverStep.value = null;
+    return;
+  }
+
+  companies.value[index].slugStatus = newStatus;
+
+  try {
+    await CompanyService.updateStatus(card.id, newStatus);
+    notification.notificationSuccess('Sucesso', 'Status atualizado com sucesso!');
+  } catch (error) {
+    companies.value[index].slugStatus = card.slugStatus;
+    console.error('Erro ao atualizar status:', error);
+    let message = 'Erro desconhecido';
+    if (error?.response?.data?.message) {
+      message = error.response.data.message;
+    } else if (error?.data?.message) {
+      message = error.data.message;
+    } else if (typeof error === 'string') {
+      message = error;
+    } else if (error?.message) {
+      message = error.message;
+    }
+    notification.notificationError('Erro ao atualizar status', message);
+  } finally {
+    draggedCard.value = null;
+    dragOverStep.value = null;
   }
 }
+
+
 </script>

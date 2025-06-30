@@ -37,7 +37,7 @@ onMounted(async () => {
   companyId.value = useRoute().params.id;
   try {
     const response = await CompanyService.getCompanyById(companyId.value, 'informacoes-basicas');
-    company.value = response.data.data;
+    company.value = response.data;
   } catch (error) {
     console.error('Erro ao carregar os dados da empresa:', error);
   }

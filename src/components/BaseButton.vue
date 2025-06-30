@@ -1,5 +1,5 @@
 <template>
-  <div class="mt-4">
+  <div>
     <button
       :class="[
         sizeClasses[size],

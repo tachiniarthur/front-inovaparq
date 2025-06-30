@@ -21,6 +21,7 @@
       >
         <option value="" disabled>{{ placeholder }}</option>
         <option
+          class="text-gray-500"
           v-for="option in options"
           :key="option.value"
           :value="option.value"
@@ -40,7 +41,7 @@
 </template>
 
 <script setup>
-const props = defineProps({
+defineProps({
   label: String,
   id: String,
   modelValue: [String, Number],
